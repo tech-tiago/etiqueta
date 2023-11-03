@@ -1,0 +1,26 @@
+
+  /* Estilos para a página de impressão */
+@media print {
+  /* Defina as dimensões da etiqueta, margens e outras configurações de impressão */
+  .etiqueta {
+      width: 100%; /* A largura da etiqueta ocupará toda a largura da página A4 */
+      height: 100px; /* A altura da etiqueta, você pode ajustar conforme necessário */
+      margin: 0 0 10px 0; /* Margem inferior de 10px entre etiquetas */
+      border: 1px solid #000; /* Borda preta para cada etiqueta */
+      page-break-after: always; /* Inserir quebra de página após cada etiqueta */
+  }
+
+  /* Estilos para os elementos dentro da etiqueta */
+  .item-name {
+      font-weight: bold;
+      font-size: 18px;
+  }
+
+  .info-label {
+      font-weight: bold;
+  }
+
+  .info-value {
+      margin-left: 10px;
+  }
+}

@@ -1,0 +1,54 @@
+.navbar-menu {
+  display: flex;
+  justify-content: flex-start; /* Alinha os itens à esquerda */
+  width: 100%;
+}
+
+.navbar-item {
+  margin-right: 30px; /* Espaço entre os itens do menu */
+}
+
+.navbar-item:last-child {
+  margin-right: 0; /* Remove o espaço extra do último item */
+}
+
+.navbar-item i {
+  margin-right: 5px; /* Espaçamento entre o ícone e o texto */
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-menu {
+      flex-direction: column; 
+      align-items: center; 
+  }
+  
+  .navbar-item {
+      margin-bottom: 10px; /* Espaço entre os itens quando estiver em modo vertical */
+  }
+}
+
+.datepicker {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+.datepicker .day.active {
+  background-color: #007BFF;
+  color: #fff;
+}
+
+.datepicker .day:hover {
+  background-color: #f0f0f0;
+}
+
+.generate-qr-button{
+  max-height: 20px;
+}
+
+.hide-if-null {
+  display: none;
+}
+
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gerenciador de Itens</title>
+        <link rel="icon" href="#" type="image/x-icon">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/datepicker/datepicker.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    </head>
+    <body>
+
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div id="navbarMenu" class="navbar-menu">
+                <a href="index.html" class="navbar-item"><i class="fas fa-home"></i> Home</a>
+                <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i> Gerar QR Code</a>
+                <a href="gerar-etiqueta.html" class="navbar-item"><i class="fa-solid fa-tags"></i> Gerar etiquetas</a>
+            </div>
+        </nav>
+        
+            <section class="section">
+                <div class="container">
+                    <!-- Formulário para adicionar novos itens -->
+                    <form id="itemForm">
+                        <div id="notification-area"></div>
+                    
+                        <div class="columns is-multiline">
+                            <!-- Primeira Coluna -->
+                            <div class="column is-full">
+                                <div class="field">
+                                    <label class="label">Nome do Item</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input is-rounded" type="text" name="itemName" placeholder="Nome do Item" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-box"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-half"> 
+                                <div class="field">
+                                    <label class="label">Data de Entrada</label>
+                                    <div class="control has-icons-left">
+                                        <input type="hidden" name="formattedDate" id="formattedDate">
+                                        <input data-toggle="datepicker" class="input is-rounded" id="datepicker" type="text" name="entryDate" placeholder="Data de Entrada" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                </div>       
+                                
+                                <div class="field">
+                                    <label class="label">IP</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input is-rounded" type="text" name="ip" placeholder="IP da máquina" >
+                                        <span class="icon is-small is-left">
+                                            <i class="fa-solid fa-network-wired"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                                                                                   
+                            </div>
+                            <!-- Segunda Coluna -->
+                            <div class="column is-half">
+                                <div class="field">
+                                    <label class="label">Tombo</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input is-rounded" type="number" name="tombo" placeholder="Tombo" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-archive"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Localização</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input is-rounded" type="text" name="location" placeholder="Localização" required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- Terceira Linha para Descrição -->
+                            <div class="column is-full">
+                                <div class="field">
+                                    <label class="label">Descrição</label>
+                                    <div class="control">
+                                        <textarea class="textarea is-rounded" name="description" placeholder="Descrição" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="field">
+                            <div class="control">
+                                
+                                <button class="button is-info is-rounded" type="submit">Adicionar Item</button>
+                            </div>
+                        </div>
+                    </form>
+        
+              <!--Início do modal de cadastro -->       
+                    <div class="modal">
+                      <div class="modal-background"></div>
+                      <div class="modal-card">
+                        <header class="modal-card-head">
+                          <p class="modal-card-title">Confirmar Cadastro</p>
+                          <button class="delete" aria-label="close"></button>
+                        </header>
+                        <section class="modal-card-body">
+                          <p>Tem certeza de que deseja cadastrar esse item?</p>
+                        </section>
+                        <footer class="modal-card-foot">
+                          <button class="button is-success" id="confirmAdd">Confirmar</button>
+                          <button class="button" id="cancelAdd">Cancelar</button>
+                        </footer>
+                      </div>
+                    </div>
+             <!-- Fim do modal de cadastro -->       
+                </div>
+            </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/data/datepicker/datepicker.min.js"></script>
+    <script src="js/data/datepicker/datepicker.pt-BR.js"></script>
+    <script src="js/data/datepicker/datepickerStyle.js"></script>
+    <script src="js/PageIndex/main.js"></script>  
+</body>
+
+</html>

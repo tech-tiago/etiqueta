@@ -1,0 +1,105 @@
+/* Estilos gerais */
+.modal-card.label-card {
+  width: 480px;
+  height: 305px;
+  position: relative; /* Adicione posição relativa para permitir o posicionamento absoluto */
+}
+
+.label-content {
+  border-radius: 10px;
+  border: 1px solid black;
+  width: 185px;
+  height: 85px;
+  background-color: #DCDCDC;
+  position: absolute;
+  margin-right: 10px;
+}
+
+/* Logo */
+.logo {
+  width: 120px;
+  height: 65px;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 15px; /* Ajuste a posição superior conforme necessário */
+  left: -5px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* Logo */
+.quadrado {
+  width:68px;
+  height:66px;
+  border: 1px solid; /* As 4 bordas sólidas com 25px de espessura */
+  border-radius: 4px;
+  border-color: #000;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 12px; /* Ajuste a posição superior conforme necessário */
+  right: 7px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* tombo */
+.tombo-info {
+  font-size: 8px;
+  white-space: nowrap;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 1px; /* Ajuste a posição superior conforme necessário */
+  left: -4px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* QR Code */
+.qr-code {
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 15px; /* Ajuste a posição superior conforme necessário */
+  right: 11px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* IP */
+.ip-info {
+  font-size: 8px;
+  white-space: nowrap;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 1px; /* Ajuste a posição superior conforme necessário */
+  right: 126px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* Data */
+.data-info {
+  font-size: 8px;
+  display: block;
+  white-space: nowrap;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 1px; /* Ajuste a posição superior conforme necessário */
+  right: 60px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* COD */
+.cod-info {
+  font-size: 6px;
+  white-space: nowrap;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 65px; /* Ajuste a posição superior conforme necessário */
+  right: 110px; /* Ajuste a posição esquerda conforme necessário */
+}
+
+/* Local */
+.local-info {
+  font-size: 7px;
+  white-space: nowrap;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+  top: 67px; /* Ajuste a posição superior conforme necessário */
+  left: -4px; /* Ajuste a posição esquerda conforme necessário */
+}
+/* Informações do item */
+.item-info {
+  font-size: 10px;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+}
+
+.data-label {
+  text-align: right;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+}
+
+.info-value {
+  text-align: right;
+  position: absolute; /* Use posicionamento absoluto para posicionar livremente */
+}
