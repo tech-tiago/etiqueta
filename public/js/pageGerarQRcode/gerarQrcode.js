@@ -115,6 +115,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     function showQRCodeModal(item) {
+
+        let ipDoItem;
+
+        if (item.ip === 'null') {
+            ipDoItem = '';
+        } else {
+            ipDoItem = `_IP: ${item.ip}`;
+        }
+
         const modal = createElement('div', { className: 'modal is-active' },
             createElement('div', { className: 'modal-background' }),
             createElement('div', { className: 'modal-card label-card' },
@@ -122,12 +131,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     createElement('p', { className: 'modal-card-title' }),
                     createElement('button', { className: 'delete', 'aria-label': 'close' })
                 ),
+
                 createElement('section', { className: 'modal-card-body' },
                     createElement('div', { className: 'label-content' },
                         createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo' }),
                         createElement('div', { className: 'item-details' },
                             createElement('div', { className: 'tombo-info' },
-                                createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo,'_IP:', item.ip ,'_COD:',item.codItems)
+                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, ipDoItem ,'_COD:',item.codItems)
                             ),
 
                             createElement('div', { className: 'local-info' },
