@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayItemsInTable(items) {
+        showSuccessNotification('Item atualizado com sucesso.');
         const table = $('#historyTable').DataTable({
             paging: true,
             searching: true,
@@ -93,6 +94,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     render: function (data, type, row) {
                         return '<button class="generate-qr-button button is-info"><i class="fa-solid fa-qrcode"></i>&nbsp;Gerar</button>';
                     }
+                },
+                { 
+                    data: null,
+                    render: function (data, type, row) {
+                        return '<button class="edit-item-button button is-small is-warning"><i class="fa-solid fa-pencil"></i>&nbsp;Editar</button>';
+                    }
                 }
             ]
         });
@@ -102,16 +109,181 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = table.row($(this).parents('tr')).data();
             showQRCodeModal(data);
         });
+
+        // Exemplo de evento de clique para abrir o modal de edição
+        $('#historyTable tbody').on('click', '.edit-item-button', function () {
+            const data = table.row($(this).parents('tr')).data();
+            showEditItemModal(data);
+        });
     }
     
-
-
-
 
     function formatDateToPTBR(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('pt-BR');
     }
+
+
+
+// Exemplo de função para abrir o modal de edição
+function showEditItemModal(item) {
+
+    let ipDoItem;
+
+    if (item.ip === 'null') {
+        ipDoItem = '';
+    } else {
+        ipDoItem = `_IP: ${item.ip}`;
+    }
+
+    // Converta a data para o formato ISO (AAAA-MM-DD)
+    const isoDate = new Date(item.entryDate).toISOString().split('T')[0];
+
+    const modal = createElement('div', { className: 'modal is-active' },
+        createElement('div', { className: 'modal-background' }),
+        createElement('div', { className: 'modal-card edit-item-card' },
+            createElement('header', { className: 'modal-card-head' },
+                createElement('p', { className: 'modal-card-title' }, 'Editar Item'),
+                createElement('button', { className: 'delete', 'aria-label': 'close' })
+            ),
+            createElement('section', { className: 'modal-card-body' },
+                createElement('label', { for: 'editTombo' }, 'Tombo'),
+                createElement('input', { className: 'input', type: 'text', value: item.tombo, id: 'editTombo' }),
+                createElement('label', { for: 'editIp' }, 'IP'),             
+                createElement('input', { className: 'input', type: 'text', value: item.ip, id: 'editIp' }),
+                createElement('label', { for: 'editItemName' }, 'Nome do item'),
+                createElement('input', { className: 'input', type: 'text', value: item.itemName, id: 'editItemName' }),
+                createElement('label', { for: 'editDate' }, 'Data'),
+                createElement('input', { className: 'input', type: 'date', value: isoDate, id: 'editDate' }),
+                createElement('label', { for: 'editLocation' }, 'Localização'),
+                createElement('input', { className: 'input', type: 'text', value: item.location, id: 'editLocation' }),
+                createElement('label', { for: 'editDescription' }, 'Descrição'),
+                createElement('input', { className: 'input', type: 'textarea', value: item.description, id: 'editDescription' }),
+
+            ),
+            createElement('footer', { className: 'modal-card-foot' },
+                createElement('button', { id: 'cancelEditButton', className: 'button is-danger' }, 'Cancelar'),
+                createElement('button', { id: 'confirmEditButton', className: 'button is-success' }, 'Salvar')
+            )
+        )
+    );
+
+    document.body.appendChild(modal);
+
+    const confirmEditButton = document.getElementById('confirmEditButton');
+    const cancelEditButton = document.getElementById('cancelEditButton');
+    const closeButton = modal.querySelector('.delete');
+
+    confirmEditButton.addEventListener('click', function () {
+        // Chamada para atualizar o item
+        const editedItem = {
+            tombo: document.getElementById('editTombo').value,
+            ip: document.getElementById('editIp').value,
+            itemName: document.getElementById('editItemName').value,
+            entryDate: document.getElementById('editDate').value,
+            description: document.getElementById('editDescription').value,
+            location: document.getElementById('editLocation').value,
+        };
+
+        // Exibir um modal de confirmação
+        showUpdateConfirmationModal(() => {
+            // Faça uma requisição ao servidor para atualizar o item com os novos valores
+            fetch(`/items/${item.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editedItem)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Trate a resposta do servidor
+                console.log(data);
+
+                // Exiba um alerta de sucesso
+                showSuccessNotification('Item atualizado com sucesso.');
+
+                // Feche o modal
+                document.body.removeChild(modal);
+
+                // Atualize a tabela com os novos dados (opcional)
+            })
+            .catch(error => {
+                // Trate erros, exiba mensagens de erro, etc.
+                console.error(error);
+            });
+        });
+    });
+
+    cancelEditButton.addEventListener('click', function () {
+        // Feche o modal sem salvar as alterações
+        document.body.removeChild(modal);
+    });
+
+    closeButton.addEventListener('click', function () {
+        // Feche o modal sem salvar as alterações
+        document.body.removeChild(modal);
+    });
+}
+
+// Função para abrir o modal de confirmação
+function showUpdateConfirmationModal(confirmCallback) {
+    const modal = createElement('div', { className: 'modal is-active' },
+        createElement('div', { className: 'modal-background' }),
+        createElement('div', { className: 'modal-card' },
+            createElement('header', { className: 'modal-card-head' },
+                createElement('p', { className: 'modal-card-title' }, 'Confirmação'),
+                createElement('button', { className: 'delete', 'aria-label': 'close' })
+            ),
+            createElement('section', { className: 'modal-card-body' },
+                createElement('p', {}, 'Deseja realmente atualizar o item?')
+            ),
+            createElement('footer', { className: 'modal-card-foot' },
+                createElement('button', { id: 'confirmUpdateButton', className: 'button is-success' }, 'Confirmar'),
+                createElement('button', { id: 'cancelUpdateButton', className: 'button is-danger' }, 'Cancelar')
+            )
+        )
+        
+    );
+
+    document.body.appendChild(modal);
+
+    const confirmUpdateButton = document.getElementById('confirmUpdateButton');
+    const cancelUpdateButton = document.getElementById('cancelUpdateButton');
+    const closeButton = modal.querySelector('.delete');
+
+    confirmUpdateButton.addEventListener('click', function () {
+        // Chame a função de confirmação passada como argumento
+        confirmCallback();
+        // Feche o modal de confirmação
+        document.body.removeChild(modal);
+    });
+
+    cancelUpdateButton.addEventListener('click', function () {
+        // Feche o modal de confirmação
+        document.body.removeChild(modal);
+    });
+
+    closeButton.addEventListener('click', function () {
+        // Feche o modal de confirmação
+        document.body.removeChild(modal);
+    });
+}
+
+function showSuccessNotification(message) {
+    const notification = createElement('div', { className: 'notification is-success' }, message);
+    document.body.appendChild(notification);
+
+    // Remova o alerta após alguns segundos (opcional)
+    setTimeout(function () {
+        document.body.removeChild(notification);
+    }, 3000); // 3 segundos
+
+    
+}
+
+
+
 
 
     function showQRCodeModal(item) {
@@ -206,7 +378,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
 
     
-
     function createElement(tag, options = {}, ...children) {
         const element = document.createElement(tag);
         Object.assign(element, options);

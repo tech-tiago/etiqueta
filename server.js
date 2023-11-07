@@ -70,6 +70,54 @@ app.post('/items', (req, res) => {
   });
 });
 
+// Endpoint para obter os detalhes de um item específico pelo ID
+app.get('/items/:id', (req, res) => {
+  const id = req.params.id;
+  console.log("ID requisitado:", id);
+
+  const query = 'SELECT * FROM items WHERE id = ?';
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error("Erro durante a consulta:", error);
+      return res.status(500).send(error);
+    }
+    console.log("Resultado da consulta:", results);
+
+    if (results.length === 0) return res.status(404).send({ message: "Item não encontrado" });
+    res.json(results[0]);
+  });
+});
+
+
+// Endpoint para atualizar os detalhes de um item pelo ID
+app.put('/items/:id', (req, res) => {
+  const id = req.params.id;
+  const { itemName, entryDate, location, description, ip, tombo } = req.body;
+
+ // if (!itemName || !entryDate || !location || !description || !ip || !tombo) {
+  //  return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+//}
+
+  // Utilize entryDate diretamente como formattedDate
+  const formattedDate = entryDate;
+
+  const updateQuery = 'UPDATE items SET itemName = ?, entryDate = ?, location = ?, description = ?, ip = ?, tombo = ? WHERE id = ?';
+
+  connection.query(updateQuery, [itemName, formattedDate, location, description, ip, tombo, id], (error, results) => {
+    if (error) {
+      console.error('Erro durante a atualização:', error);
+      return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+    }
+
+    console.log('Valores a serem atualizados:', { itemName, entryDate: formattedDate, location, description, ip, tombo, id });
+    res.json({
+      id,
+      message: 'Item atualizado com sucesso!'
+    });
+  });
+});
+
+
 
 // Endpoint para obter todos os itens
 app.get('/items', (req, res) => {

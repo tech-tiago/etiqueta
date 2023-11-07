@@ -43,6 +43,10 @@
   background-color: #f0f0f0;
 }
 
+.edit-item-button{
+  max-height: 24px;
+}
+
 .generate-qr-button{
   max-height: 20px;
 }
