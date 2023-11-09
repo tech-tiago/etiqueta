@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayItemsInTable(items) {
-        showSuccessNotification('Item atualizado com sucesso.');
         const table = $('#historyTable').DataTable({
             paging: true,
             searching: true,
@@ -123,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return date.toLocaleDateString('pt-BR');
     }
 
-
+ 
 
 // Exemplo de função para abrir o modal de edição
 function showEditItemModal(item) {
@@ -200,9 +199,6 @@ function showEditItemModal(item) {
                 // Trate a resposta do servidor
                 console.log(data);
 
-                // Exiba um alerta de sucesso
-                showSuccessNotification('Item atualizado com sucesso.');
-
                 // Feche o modal
                 document.body.removeChild(modal);
 
@@ -269,7 +265,8 @@ function showUpdateConfirmationModal(confirmCallback) {
         document.body.removeChild(modal);
     });
 }
-
+   // Exiba um alerta de sucesso
+   // showSuccessNotification('Item atualizado com sucesso.');
 function showSuccessNotification(message) {
     const notification = createElement('div', { className: 'notification is-success' }, message);
     document.body.appendChild(notification);
