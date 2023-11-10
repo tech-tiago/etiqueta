@@ -1,3 +1,4 @@
+
 .navbar-menu {
   display: flex;
   justify-content: flex-start; /* Alinha os itens à esquerda */
@@ -53,6 +54,10 @@
 
 .hide-if-null {
   display: none;
+}
+
+.yn{
+  font-size: 10px;
 }
 
 

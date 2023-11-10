@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/datepicker/datepicker.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-extensions@6.2.7/dist/css/bulma-extensions.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     </head>
     <body>
@@ -55,11 +56,13 @@
                                         </span>
                                     </div>
                                 </div>       
-                                
                                 <div class="field">
-                                    <input id="switchRoundedInfo" type="checkbox" name="switchRoundedInfo" class="switch is-rounded is-info">
-                                    <label for="switchRoundedInfo">O equipamento possue IP?</label>
-                                  </div>
+                                    <label class="label">O item possui IP?</label>
+                                        <div class="field">
+                                            <input id="switchRoundedInfo" type="checkbox" name="switchRoundedInfo" class="switch is-rounded is-info" >
+                                            <label for="switchRoundedInfo"></label>
+                                        </div>
+                                </div>    
                                 <div class="field">
                                     <label class="label">IP</label>
                                     <div class="control has-icons-left">
@@ -135,6 +138,7 @@
             </section>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bulma-extensions@6.2.7/bulma-quickview/dist/js/bulma-quickview.min.js"></script>
     <script src="js/data/datepicker/datepicker.min.js"></script>
     <script src="js/data/datepicker/datepicker.pt-BR.js"></script>
     <script src="js/data/datepicker/datepickerStyle.js"></script>
