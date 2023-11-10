@@ -56,8 +56,29 @@
   display: none;
 }
 
-.yn{
-  font-size: 10px;
+/* input center ip index */
+
+.field.is-grouped {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
+.control.is-expanded {
+  flex: 1;
+}
 
+.field.has-addons-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.input {
+  width: 100%;
+}
+
+.control.is-expanded {
+  flex: 1;
+}

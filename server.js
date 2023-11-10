@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root', // seu usuário
-  password: '', // sua senha
+  password: '123', // sua senha
   database: 'etiqueta', // seu banco de dados
   timezone: '-03:00',  // Use UTC-3, por exemplo, para "America/Sao_Paulo"
   charset: 'utf8mb4', // Suporte a todos os caracteres UTF e emojis.
