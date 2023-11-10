@@ -158,7 +158,6 @@ function showEditItemModal(item) {
                 createElement('input', { className: 'input', type: 'text', value: item.location, id: 'editLocation' }),
                 createElement('label', { for: 'editDescription' }, 'Descrição'),
                 createElement('input', { className: 'input', type: 'textarea', value: item.description, id: 'editDescription' }),
-
             ),
             createElement('footer', { className: 'modal-card-foot' },
                 createElement('button', { id: 'cancelEditButton', className: 'button is-danger' }, 'Cancelar'),
@@ -278,9 +277,6 @@ function showSuccessNotification(message) {
 
     
 }
-
-
-
 
 
     function showQRCodeModal(item) {
