@@ -55,7 +55,17 @@ app.post('/items', (req, res) => {
     }
 
     const itemId = results.insertId; // Capturando o ID inserido
-    const codItems = 'CCD00' + itemId; // Gerando o codItems com base no ID inserido
+    
+    let codItems;
+    if (itemId >= 10 ) {
+      codItems = 'CCD00' + itemId;
+    } else if (itemId >= 100) {
+      codItems = 'CCD0' + itemId;
+    } else if (itemId >= 1000) {
+      codItems = 'CCD' + itemId;
+    } else {
+      codItems = 'CCD000' + itemId;
+    }
 
     const updateQuery = 'UPDATE items SET codItems = ? WHERE id = ?';
     connection.query(updateQuery, [codItems, itemId], (error) => {
