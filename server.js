@@ -1,10 +1,9 @@
 const express = require('express');
+const session = require('express-session');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs').promises;
-const { PDFDocument } = require('pdf-lib');
 
 const app = express();
 app.use(express.static('public'));
@@ -15,11 +14,73 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(cors());
 app.use(bodyParser.json());
 
+// Configuração para processar dados do formulário
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Configuração para gerenciamento de sessão
+app.use(session({
+    secret: 'xR5A%Yz!9vWQs2T#eFD',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Rota para a página raiz
+app.get('/', (req, res) => {
+  // Verifica se o usuário está autenticado
+  if (req.session.user) {
+    res.redirect('/index.html');
+  } else {
+    res.sendFile(path.join(__dirname, '/login.html'));
+  }
+});
+
+
+// Rota para a página de index (protegida)
+app.get('/index.html', (req, res) => {
+  // Verifica se o usuário está autenticado
+  if (req.session.user) {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+  } else {
+    // Se não estiver autenticado, redireciona de volta para a página de login
+    res.redirect('/');
+  }
+});
+
+
+// Rota para o processo de login
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Verifica no banco de dados se as credenciais estão corretas
+  const query = 'SELECT * FROM user WHERE username = ? AND password = ?';
+  connection.query(query, [username, password], (error, results) => {
+    if (error) {
+      console.error('Erro durante a consulta:', error);
+      return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+    }
+
+    if (results.length > 0) {
+      // Usuário autenticado com sucesso
+      const user = results[0];
+      // Armazena o usuário na sessão
+      req.session.user = user;
+
+      // Redireciona para a página index após o login bem-sucedido
+      return res.redirect('/home.html');
+    } else {
+      // Redireciona de volta para a página de login se as credenciais estiverem incorretas
+      return res.status(401).send('Credenciais inválidas');
+    }
+  });
+});
+
+
 // Criando conexão com o banco
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root', // seu usuário
-  password: '123', // sua senha
+  password: '', // sua senha
   database: 'etiqueta', // seu banco de dados
   timezone: '-03:00',  // Use UTC-3, por exemplo, para "America/Sao_Paulo"
   charset: 'utf8mb4', // Suporte a todos os caracteres UTF e emojis.
