@@ -281,14 +281,6 @@ function showSuccessNotification(message) {
 
     function showQRCodeModal(item) {
 
-        let ipDoItem;
-
-        if (item.ip === 'null') {
-            ipDoItem = '';
-        } else {
-            ipDoItem = `_IP: ${item.ip}`;
-        }
-
         const modal = createElement('div', { className: 'modal is-active' },
             createElement('div', { className: 'modal-background' }),
             createElement('div', { className: 'modal-card label-card' },
@@ -302,7 +294,7 @@ function showSuccessNotification(message) {
                         createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo' }),
                         createElement('div', { className: 'item-details' },
                             createElement('div', { className: 'tombo-info' },
-                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, ipDoItem ,'_COD:',item.codItems)
+                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '' ,' COD:',item.codItems)
                             ),
 
                             createElement('div', { className: 'local-info' },

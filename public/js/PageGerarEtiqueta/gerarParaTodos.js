@@ -1,30 +1,30 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function () {
+  // Adicionar evento para o botão de imprimir todos
+  const printAllButton = document.getElementById('printAllButton');
+  if (printAllButton) {
+    printAllButton.addEventListener('click', function () {
+      fetch('/items')
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.items && Array.isArray(data.items)) {
+            openPrintPage(data.items);
+          } else {
+            console.error('Resposta inesperada do servidor:', data);
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar itens:', error);
+        });
+    });
+  }
 
- // Adicionar evento para o botão de imprimir todos
-const printAllButton = document.getElementById('printAllButton');
-        if (printAllButton) {
-            printAllButton.addEventListener('click', function () {
-                fetch('/items')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.items && Array.isArray(data.items)) {
-                            openPrintPage(data.items);
-                        } else {
-                            console.error('Resposta inesperada do servidor:', data);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao buscar itens:', error);
-                    });
-            });
-        }
-
-    function openPrintPage(items) {
-        const printWindow = window.open('', '_blank');
-        const printContent = `
+  function openPrintPage(items) {
+    const printWindow = window.open('', '_blank');
+    const printContent = `
             <html>
             <head>
                 <title>Imprimir Etiquetas</title>
+                <link rel='stylesheet' href= 'https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css'> 
                 <style>
                     /* Estilos para a impressão em folha A4 */
                     .a4-size {
@@ -33,7 +33,7 @@ const printAllButton = document.getElementById('printAllButton');
                         display: flex;
                         flex-wrap: wrap;
                         align-content: flex-start;
-                        padding: 10mm;
+                        padding: 3.85mm;
                         background-color: white;
                         overflow: hidden;
                     }
@@ -44,9 +44,10 @@ const printAllButton = document.getElementById('printAllButton');
                         border-radius: 10px;
                         border: 1px solid black;
                         background-color: #DCDCDC;
-                        margin: 5px;
+                        margin: 3px;
                         position: relative;
                     }
+
                     .tombo-info, .local-info, .qr-code, .ip-info, .data-info, .cod-info {
                         font-size: 8px;
                         position: absolute;
@@ -69,7 +70,7 @@ const printAllButton = document.getElementById('printAllButton');
                     }
 
                     .quadrado {
-                        width: 66px;
+                        width: 68px;
                         height: 66px;
                         border: 1px solid;
                         border-radius: 4px;
@@ -99,33 +100,47 @@ const printAllButton = document.getElementById('printAllButton');
             </head>
             <body>
                 <div class="a4-size">
-                    ${items.map(item => `
-                        <div class="grid-item">
-                            <img class="logo" src="images/logo.png">
-                            <div class="tombo-info">TOMBO: ${item.tombo} _ ${item.ip || ''} _COD: ${item.codItems}</div>
-                            <div class="local-info">Local: ${item.location}</div>
-                            <div class="quadrado"></div>
-                            <div class="qr-code" id="qrcode-${item.id}"></div>
-                        </div>
-                    `).join('')}
+                    ${items
+                      .map(
+                        (item) => `
+                    <div class="grid-item">
+                        <img class="logo" src="images/logo.png">
+                        <div class="tombo-info">TOMBO:${item.tombo} ${
+                          item.ip ? ` IP:${item.ip}` : ''
+                        }  COD:${item.codItems}</div>
+                        <div class="local-info">Local: ${
+                          item.location
+                        }</div>
+                        <div class="quadrado"></div>
+                        <div class="qr-code" id="qrcode-${
+                          item.id
+                        }"></div>
+                    </div>                    
+                    `
+                      )
+                      .join('')}
                 </div>
                 <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
                 <script>
-                    ${items.map(item => `
+                    ${items
+                      .map(
+                        (item) => `
                         new QRCode(document.getElementById('qrcode-${item.id}'), {
                             text: 'http://10.48.119.115:3000/itemInfo.html?id=${item.id}',
                             width: 60,
                             height: 60
                         });
-                    `).join('')}
+                    `
+                      )
+                      .join('')}
                 </script>
             </body>
             </html>
         `;
-        printWindow.document.write(printContent);
-        printWindow.document.close();
-        printWindow.onload = function() {
-            printWindow.print();
-        };
-    }
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.onload = function () {
+      printWindow.print();
+    };
+  }
 });
