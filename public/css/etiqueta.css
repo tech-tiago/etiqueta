@@ -6,6 +6,7 @@
 }
 
 .label-content {
+  -webkit-print-color-adjust: exact;
   border-radius: 10px;
   border: 1px solid black;
   width: 185px;

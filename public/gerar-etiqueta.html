@@ -3,31 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerar Etiqueta</title>
+    <title>Gerar QR Code</title>
     <link rel="icon" href="#" type="image/x-icon">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/print.css">
+    <link rel="stylesheet" href="css/etiqueta.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bm/dt-1.13.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-    <section class="section">
-        <div class="container">
-<!-- O modal que será exibido/oculto -->
-<div class="modal" id="etiquetaModal">
-    <div class="modal-background"></div>
-    <div class="modal-content">
-      <!-- Conteúdo da etiqueta -->
-      <div class="modal-card label-card">
-        <!-- Seu conteúdo aqui -->
-      </div>
-    </div>
-    <button class="modal-close is-large" aria-label="close"></button>
-  </div>
-  
-  <!-- Botão para abrir o modal -->
-  <button id="gerarTodasAsEtiquetasButton">Gerar Etiquetas</button>
 
-        </div>
-    </section>
-    <script src="js/pageGerarQRcode/gerarParaTodos.js" ></script>
+<body>
+
+
+
+    <!-- Códigos JavaScript -->
+    <script src="js/pageGerarQRcode/tabelaStyle.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/v/bm/dt-1.13.6/datatables.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="js/pageGerarQRcode/gerarQrcode.js"></script>
+    <script src="js/pageGerarQRcode/gerarParaTodos.js"></script>
 </body>
 </html>

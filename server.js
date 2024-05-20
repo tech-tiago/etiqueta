@@ -67,7 +67,7 @@ app.post('/login', (req, res) => {
       req.session.user = user;
 
       // Redireciona para a página index após o login bem-sucedido
-      return res.redirect('/home.html');
+      return res.redirect('/index.html');
     } else {
       // Redireciona de volta para a página de login se as credenciais estiverem incorretas
       return res.status(401).send('Credenciais inválidas');
