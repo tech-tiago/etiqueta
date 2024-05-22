@@ -1,13 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('localizacaoForm');
     const notificationArea = document.getElementById('notification-area');
+    const corInput = document.getElementById('corInput');
+    const corSelector = document.getElementById('corSelector');
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
         const formData = new FormData(form);
         const data = {
-            nome: formData.get('nome')
+            nome: formData.get('nome'),
+            cor: formData.get('cor') 
         };
 
         try {
@@ -30,6 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             showNotification('error', `Erro ao conectar com o servidor: ${error.message}`);
         }
+    });
+
+    // Atualiza o valor do input oculto quando o usuário seleciona uma cor
+    corSelector.addEventListener('input', () => {
+        corInput.value = corSelector.value;
     });
 
     function showNotification(type, message) {

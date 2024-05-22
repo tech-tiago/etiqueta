@@ -16,7 +16,7 @@
     <div id="navbarMenu" class="navbar-menu">
         <a href="index.html" class="navbar-item"><i class="fas fa-home"></i> Home</a>
         <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i> Gerar QR Code</a>
-        <a href="cadastro-localizacao.html" class="navbar-item"><i class="fas fa-map-marker-alt"></i> Cadastro de Localização</a>
+        <a href="localizacao.html" class="navbar-item"><i class="fas fa-map-marker-alt"></i> Cadastro de Localização</a>
         <a href="login.html" class="navbar-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
     </div>
 </nav>
@@ -33,11 +33,21 @@
                 </div>
             </div>
             <div class="field">
+                <label class="label">Cor da Localização</label>
+                <div class="control">
+                    <input type="color" id="corSelector" name="cor" value="#000000" style="height: 2.25em; padding: 0;">
+                    <!-- Input oculto para armazenar a cor selecionada -->
+                    <input type="hidden" id="corInput" name="cor" required>
+                </div>
+            </div>
+            <div class="field">
                 <div class="control">
                     <button class="button is-info" type="submit">Adicionar Localização</button>
                 </div>
             </div>
         </form>
+        
+        
     </div>
 </section>
 

@@ -194,27 +194,28 @@ app.put('/items/:id', (req, res) => {
 });
 
 
+
 // Endpoint para adicionar uma nova localização
 app.post('/localizacao', (req, res) => {
-  const { nome } = req.body;
+  const { nome, cor } = req.body;
 
-  if (!nome) {
-      return res.status(400).json({ message: 'Nome da localização é obrigatório' });
+  if (!nome || !cor) {
+    return res.status(400).json({ message: 'Nome e cor da localização são obrigatórios' });
   }
 
-  const insertQuery = 'INSERT INTO localizacao (nome) VALUES (?)';
+  const insertQuery = 'INSERT INTO localizacao (nome, cor) VALUES (?, ?)'; // Incluído o campo "cor" na inserção
 
-  connection.query(insertQuery, [nome], (error, results) => {
-      if (error) {
-          console.error('Erro durante a inserção:', error);
-          return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
-      }
+  connection.query(insertQuery, [nome, cor], (error, results) => {
+    if (error) {
+      console.error('Erro durante a inserção:', error);
+      return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+    }
 
-      const localizacaoId = results.insertId;
-      res.json({
-          id: localizacaoId,
-          message: 'Localização adicionada com sucesso!'
-      });
+    const localizacaoId = results.insertId;
+    res.json({
+      id: localizacaoId,
+      message: 'Localização adicionada com sucesso!'
+    });
   });
 });
 
@@ -222,14 +223,13 @@ app.post('/localizacao', (req, res) => {
 app.get('/localizacao', (req, res) => {
   const query = 'SELECT * FROM localizacao';
   connection.query(query, (error, results) => {
-      if (error) {
-          console.error('Erro durante a consulta:', error);
-          return res.status(500).json({ error: error.message });
-      }
-      res.json({ localizacoes: results });
+    if (error) {
+      console.error('Erro durante a consulta:', error);
+      return res.status(500).json({ error: error.message });
+    }
+    res.json({ localizacoes: results });
   });
 });
-
 
 
 
