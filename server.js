@@ -76,6 +76,11 @@ app.post('/login', (req, res) => {
 });
 
 
+// Rota para a página de localização
+app.get('/localizacao.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/localizacao.html'));
+});
+
 // Criando conexão com o banco
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -187,6 +192,44 @@ app.put('/items/:id', (req, res) => {
     });
   });
 });
+
+
+// Endpoint para adicionar uma nova localização
+app.post('/localizacao', (req, res) => {
+  const { nome } = req.body;
+
+  if (!nome) {
+      return res.status(400).json({ message: 'Nome da localização é obrigatório' });
+  }
+
+  const insertQuery = 'INSERT INTO localizacao (nome) VALUES (?)';
+
+  connection.query(insertQuery, [nome], (error, results) => {
+      if (error) {
+          console.error('Erro durante a inserção:', error);
+          return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+      }
+
+      const localizacaoId = results.insertId;
+      res.json({
+          id: localizacaoId,
+          message: 'Localização adicionada com sucesso!'
+      });
+  });
+});
+
+// Endpoint para obter todas as localizações
+app.get('/localizacao', (req, res) => {
+  const query = 'SELECT * FROM localizacao';
+  connection.query(query, (error, results) => {
+      if (error) {
+          console.error('Erro durante a consulta:', error);
+          return res.status(500).json({ error: error.message });
+      }
+      res.json({ localizacoes: results });
+  });
+});
+
 
 
 

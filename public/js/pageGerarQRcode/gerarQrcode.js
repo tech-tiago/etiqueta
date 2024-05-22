@@ -65,9 +65,20 @@ document.addEventListener("DOMContentLoaded", function() {
         element.append(...children);
         return element;
     }
+    
+
 
     function displayItemsInTable(items) {
-        const table = $('#historyTable').DataTable({
+        const tableId = '#historyTable';
+        
+        // Verifique se a tabela já foi inicializada como DataTable
+        if ($.fn.DataTable.isDataTable(tableId)) {
+            // Destrua a instância existente do DataTable
+            $(tableId).DataTable().clear().destroy();
+        }
+
+        // Inicialize a tabela novamente com os novos dados
+        const table = $(tableId).DataTable({
             paging: true,
             searching: true,
             pageLength: 10,
@@ -124,17 +135,34 @@ document.addEventListener("DOMContentLoaded", function() {
 
  
 
+    function loadLocations(selectedLocation) {
+        fetch('/localizacao')
+            .then(response => response.json())
+            .then(data => {
+                const locationSelect = document.getElementById('editLocation');
+                locationSelect.innerHTML = ''; // Limpa as opções existentes
+    
+                data.localizacoes.forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location.nome; // Use o nome como valor
+                    option.text = location.nome;
+                    if (location.nome === selectedLocation) {
+                        option.selected = true;
+                    }
+                    locationSelect.appendChild(option);
+                });
+    
+                console.log("Localizações carregadas:", data.localizacoes);
+                console.log("Localização selecionada:", selectedLocation);
+            })
+            .catch(error => {
+                console.error('Erro ao carregar localizações:', error);
+            });
+    }
+    
+
 // Exemplo de função para abrir o modal de edição
 function showEditItemModal(item) {
-
-    let ipDoItem;
-
-    if (item.ip === 'null') {
-        ipDoItem = '';
-    } else {
-        ipDoItem = `_IP: ${item.ip}`;
-    }
-
     // Converta a data para o formato ISO (AAAA-MM-DD)
     const isoDate = new Date(item.entryDate).toISOString().split('T')[0];
 
@@ -148,16 +176,20 @@ function showEditItemModal(item) {
             createElement('section', { className: 'modal-card-body' },
                 createElement('label', { for: 'editTombo' }, 'Tombo'),
                 createElement('input', { className: 'input', type: 'text', value: item.tombo, id: 'editTombo' }),
-                createElement('label', { for: 'editIp' }, 'IP'),             
+                createElement('label', { for: 'editIp' }, 'IP'),
                 createElement('input', { className: 'input', type: 'text', value: item.ip, id: 'editIp' }),
                 createElement('label', { for: 'editItemName' }, 'Nome do item'),
                 createElement('input', { className: 'input', type: 'text', value: item.itemName, id: 'editItemName' }),
                 createElement('label', { for: 'editDate' }, 'Data'),
-                createElement('input', { className: 'input', type: 'date', value: isoDate, id: 'editDate' }),
+                createElement('input', { className: 'input is-fullwidth', type: 'date', value: isoDate, id: 'editDate' }),
                 createElement('label', { for: 'editLocation' }, 'Localização'),
-                createElement('input', { className: 'input', type: 'text', value: item.location, id: 'editLocation' }),
+                createElement('div', { className: 'select is-fullwidth' },
+                    createElement('select', { id: 'editLocation' },
+                        createElement('option', { value: '', disabled: true, selected: true }, 'Selecione uma localização')
+                    ),
+                ),
                 createElement('label', { for: 'editDescription' }, 'Descrição'),
-                createElement('input', { className: 'input', type: 'textarea', value: item.description, id: 'editDescription' }),
+                createElement('textarea', { className: 'textarea', id: 'editDescription' }, item.description)
             ),
             createElement('footer', { className: 'modal-card-foot' },
                 createElement('button', { id: 'cancelEditButton', className: 'button is-danger' }, 'Cancelar'),
@@ -167,6 +199,9 @@ function showEditItemModal(item) {
     );
 
     document.body.appendChild(modal);
+
+    // Adicionar evento para carregar localizações
+    loadLocations(item.location);
 
     const confirmEditButton = document.getElementById('confirmEditButton');
     const cancelEditButton = document.getElementById('cancelEditButton');
@@ -202,6 +237,7 @@ function showEditItemModal(item) {
                 document.body.removeChild(modal);
 
                 // Atualize a tabela com os novos dados (opcional)
+                fetchAndDisplayItems();
             })
             .catch(error => {
                 // Trate erros, exiba mensagens de erro, etc.
@@ -238,7 +274,6 @@ function showUpdateConfirmationModal(confirmCallback) {
                 createElement('button', { id: 'cancelUpdateButton', className: 'button is-danger' }, 'Cancelar')
             )
         )
-        
     );
 
     document.body.appendChild(modal);
@@ -264,6 +299,7 @@ function showUpdateConfirmationModal(confirmCallback) {
         document.body.removeChild(modal);
     });
 }
+
    // Exiba um alerta de sucesso
    // showSuccessNotification('Item atualizado com sucesso.');
 function showSuccessNotification(message) {

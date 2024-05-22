@@ -1,10 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Carregar as localizações no combo box
+  fetch('/localizacao')
+      .then(response => response.json())
+      .then(data => {
+          const locationSelect = document.querySelector('select[name="location"]');
+          data.localizacoes.forEach(localizacao => {
+              const option = document.createElement('option');
+              option.value = localizacao.nome;
+              option.textContent = localizacao.nome;
+              locationSelect.appendChild(option);
+          });
+      })
+      .catch(error => {
+          console.error('Erro ao carregar as localizações:', error);
+          displayNotification('Ocorreu um erro ao carregar as localizações.', 'error');
+      });
+
   const addItemForm = document.getElementById("itemForm");
   if (addItemForm) {
-    addItemForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      showConfirmationModal();
-    });
+      addItemForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          showConfirmationModal();
+      });
   }
 });
 
@@ -12,30 +29,31 @@ function showConfirmationModal() {
   const modal = document.createElement("div");
   modal.className = "modal is-active";
   modal.innerHTML = `
-    <div class="modal-background"></div>
-    <div class="modal-card">
-        <header class="modal-card-head">
-            <p class="modal-card-title">Confirmação</p>
-            <button class="delete" aria-label="close"></button>
-        </header>
-        <section class="modal-card-body">
-            Deseja realmente cadastrar o item?
-        </section>
-        <footer class="modal-card-foot">
-            <button class="button is-success" id="confirm-add">Confirmar</button>
-            <button class="button" id="cancel-add">Cancelar</button>
-        </footer>
-    </div>
+      <div class="modal-background"></div>
+      <div class="modal-card">
+          <header class="modal-card-head">
+              <p class="modal-card-title">Confirmação</p>
+              <button class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+              Deseja realmente cadastrar o item?
+          </section>
+          <footer class="modal-card-foot">
+              <button class="button is-success" id="confirm-add">Confirmar</button>
+              <button class="button" id="cancel-add">Cancelar</button>
+          </footer>
+      </div>
   `;
   document.body.appendChild(modal);
 
   modal.querySelector(".delete").addEventListener("click", () => closeModal(modal));
   modal.querySelector("#cancel-add").addEventListener("click", () => closeModal(modal));
   modal.querySelector("#confirm-add").addEventListener("click", () => {
-    actualAddItem();
-    closeModal(modal);
+      actualAddItem();
+      closeModal(modal);
   });
 }
+
 
 /**
  * Fecha a janela modal.

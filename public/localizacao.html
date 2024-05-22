@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Localização</title>
+    <link rel="icon" href="#" type="image/x-icon">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-extensions@6.2.7/dist/css/bulma-extensions.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div id="navbarMenu" class="navbar-menu">
+        <a href="index.html" class="navbar-item"><i class="fas fa-home"></i> Home</a>
+        <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i> Gerar QR Code</a>
+        <a href="cadastro-localizacao.html" class="navbar-item"><i class="fas fa-map-marker-alt"></i> Cadastro de Localização</a>
+        <a href="login.html" class="navbar-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
+    </div>
+</nav>
+
+<section class="section">
+    <div class="container">
+        <!-- Formulário para adicionar nova localização -->
+        <form id="localizacaoForm">
+            <div id="notification-area"></div>
+            <div class="field">
+                <label class="label">Nome da Localização</label>
+                <div class="control">
+                    <input class="input" type="text" name="nome" placeholder="Nome da Localização" required>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-info" type="submit">Adicionar Localização</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/PageLocalizacao/localizacao.js"></script>
+
+</body>
+</html>
