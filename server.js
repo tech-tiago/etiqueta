@@ -190,7 +190,7 @@ app.put('/items/:id', (req, res) => {
   const { itemName, entryDate, location, description, ip, tombo } = req.body;
 
   // Validate that required fields are provided
-  if (!itemName || !entryDate || !location || !description || !ip || !tombo) {
+  if (!itemName || !entryDate || !location || !description || !tombo) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
   }
 
