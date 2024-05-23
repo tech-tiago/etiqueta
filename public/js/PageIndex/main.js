@@ -138,17 +138,14 @@ function addItem() {
   showConfirmationModal();
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   // Esconder o campo de input e o ícone inicialmente
   $('#ipField').hide();
 
   // Ao alterar o toggle button
-  $('#switchRoundedInfo').change(function() {
+  $('#switchRoundedInfo').change(function () {
     if ($(this).is(':checked')) {
       $('#ipField').show();
-      if (ipField.val() === 'null') {
-        ipField.val(''); 
-      }
     } else {
       $('#ipField').hide();
       $('#ipField input[name="ip"]').val('null');

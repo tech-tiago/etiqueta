@@ -70,13 +70,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function displayItemsInTable(items) {
         const tableId = '#historyTable';
-        
+    
         // Verifique se a tabela já foi inicializada como DataTable
         if ($.fn.DataTable.isDataTable(tableId)) {
             // Destrua a instância existente do DataTable
             $(tableId).DataTable().clear().destroy();
         }
-
+    
+        // Limpe o conteúdo da tabela
+        $(tableId).empty();
+    
         // Inicialize a tabela novamente com os novos dados
         const table = $(tableId).DataTable({
             paging: true,
@@ -88,25 +91,28 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             data: items,
             columns: [
-                { data: 'codItems' },
-                { data: 'tombo' },
-                { data: 'itemName' },
+                { data: 'codItems', title: 'Código' },
+                { data: 'tombo', title: 'Tombo' },
+                { data: 'itemName', title: 'Nome do Item' },
                 { 
                     data: 'entryDate',
+                    title: 'Data de Entrada',
                     render: function (data, type, row) {
                         return formatDateToPTBR(data);
                     }
                 },
-                { data: 'location' },
-                { data: 'description' },
+                { data: 'location', title: 'Localização' },
+                { data: 'description', title: 'Descrição' },
                 { 
                     data: null,
+                    title: 'Gerar QRcode',
                     render: function (data, type, row) {
                         return '<button class="generate-qr-button button is-info"><i class="fa-solid fa-qrcode"></i>&nbsp;Gerar</button>';
                     }
                 },
                 { 
                     data: null,
+                    title: 'Acão',
                     render: function (data, type, row) {
                         return '<button class="edit-item-button button is-small is-warning"><i class="fa-solid fa-pencil"></i>&nbsp;Editar</button>';
                     }
@@ -119,13 +125,15 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = table.row($(this).parents('tr')).data();
             showQRCodeModal(data);
         });
-
+    
         // Exemplo de evento de clique para abrir o modal de edição
         $('#historyTable tbody').on('click', '.edit-item-button', function () {
             const data = table.row($(this).parents('tr')).data();
             showEditItemModal(data);
         });
     }
+    
+    
     
 
     function formatDateToPTBR(dateString) {
@@ -302,65 +310,56 @@ function showUpdateConfirmationModal(confirmCallback) {
 
    // Exiba um alerta de sucesso
    // showSuccessNotification('Item atualizado com sucesso.');
-function showSuccessNotification(message) {
-    const notification = createElement('div', { className: 'notification is-success' }, message);
-    document.body.appendChild(notification);
-
-    // Remova o alerta após alguns segundos (opcional)
-    setTimeout(function () {
-        document.body.removeChild(notification);
-    }, 3000); // 3 segundos
-
-    
-}
 
 
-    function showQRCodeModal(item) {
+   function showQRCodeModal(item) {
+    const modal = createElement('div', { className: 'modal is-active' },
+        createElement('div', { className: 'modal-background', style: 'background-color: rgba(0, 0, 0, 0.75);' }),
+        createElement('div', { className: 'modal-card label-card', style: 'width: 480px; height: 305px; position: relative;' },
+            createElement('header', { className: 'modal-card-head' },
+                createElement('p', { className: 'modal-card-title' }),
+                createElement('button', { className: 'delete', 'aria-label': 'close' })
+            ),
 
-        const modal = createElement('div', { className: 'modal is-active' },
-            createElement('div', { className: 'modal-background' }),
-            createElement('div', { className: 'modal-card label-card' },
-                createElement('header', { className: 'modal-card-head' },
-                    createElement('p', { className: 'modal-card-title' }),
-                    createElement('button', { className: 'delete', 'aria-label': 'close' })
-                ),
-
-                createElement('section', { className: 'modal-card-body' },
-                    createElement('div', { className: 'label-content' },
-                        createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo' }),
-                        createElement('div', { className: 'item-details' },
-                            createElement('div', { className: 'tombo-info' },
-                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '' ,' COD:',item.codItems)
-                            ),
-
-                            createElement('div', { className: 'local-info' },
-                                createElement('div', { className: 'info-value' }, 'Local: ', item.location)
-                            ),
-
-                            createElement('div', { className: 'quadrado' },
-                            )
+            createElement('section', { className: 'modal-card-body' },
+                createElement('div', {
+                    className: 'label-content',
+                    style: `-webkit-print-color-adjust: exact; border-radius: 10px; border: 1px solid black; width: 185px; height: 85px; position: absolute; margin-right: 10px; background-color: ${item.cor};`
+                },
+                    createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo', style: 'width: 120px; height: 65px; position: absolute; top: 15px; left: -5px;' }),
+                    createElement('div', { className: 'item-details' },
+                        createElement('div', { className: 'tombo-info', style: 'font-size: 8px; position: absolute; white-space: nowrap; top: 1px; left: 5px;' },
+                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)
                         ),
-                        createElement('div', { className: 'qr-code ' },
-                            createElement('div', { id: 'qrcode' })
-                        )
+
+                        createElement('div', { className: 'local-info', style: 'font-size: 8px; position: absolute; white-space: nowrap; top: 67px; left: 5px;' },
+                            createElement('div', { className: 'info-value' }, 'Local: ', item.location)
+                        ),
+
+                        createElement('div', { className: 'quadrado', style: 'width: 68px; height: 66px; border: 1px solid; border-radius: 4px; border-color: #000; position: absolute; top: 12px; right: 7px;' }),
+                    ),
+                    createElement('div', { className: 'qr-code ', style: 'position: absolute; top: 15px; right: 11px;' },
+                        createElement('div', { id: 'qrcode', style: 'width: 60px; height: 60px;' })
                     )
-                ),
-                createElement('footer', { className: 'modal-card-foot' },
-                    createElement('button', { id: 'imprimirButton', className: 'button is-primary is-small' }, 'Imprimir'),
-                    createElement('a', { id: 'downloadButton', className: 'button is-info is-small', href: '#', download: 'etiqueta.png' }, 'Download')
                 )
+            ),
+            createElement('footer', { className: 'modal-card-foot' },
+                createElement('button', { id: 'imprimirButton', className: 'button is-primary is-small' }, 'Imprimir'),
+                createElement('a', { id: 'downloadButton', className: 'button is-info is-small', href: '#', download: 'etiqueta.png' }, 'Download')
             )
-        );
-    
-        document.body.appendChild(modal);
-    
-        const itemUrl = `http://10.48.119.115:3000/itemInfo.html?id=${item.id}`;
-        new QRCode(document.getElementById('qrcode'), {
-            text: itemUrl,
-            width: 60,
-            height: 60
-        });
-    
+        )
+    );
+
+    document.body.appendChild(modal);
+
+    const itemUrl = `http://10.48.119.115:3000/itemInfo.html?id=${item.id}`;
+    new QRCode(document.getElementById('qrcode'), {
+        text: itemUrl,
+        width: 60,
+        height: 60
+    });
+
+
         const imprimirButton = document.getElementById('imprimirButton');
         const downloadButton = document.getElementById('downloadButton');
         const closeButton = modal.querySelector('.delete');

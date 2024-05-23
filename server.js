@@ -103,50 +103,68 @@ app.post('/items', (req, res) => {
   console.log('Corpo da requisição:', req.body);
   const { itemName, entryDate, location, description, ip, tombo } = req.body;
 
-  if (!itemName || !entryDate || !location || !description || !ip || !tombo) {
+  if (!itemName || !entryDate || !location || !description || !tombo) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
   }
 
   // Utilize entryDate diretamente como formattedDate
   const formattedDate = entryDate;
 
-  // Inserção inicial com um valor temporário para codItems
-  const tempCodItems = 'TEMP';
-  const insertQuery = 'INSERT INTO items (itemName, entryDate, location, description, codItems, ip, tombo) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  // Busca o ID da localização com base no nome
+  const selectQuery = 'SELECT id FROM localizacao WHERE nome = ?';
 
-  connection.query(insertQuery, [itemName, formattedDate, location, description, tempCodItems, ip, tombo], (error, results) => {
+  connection.query(selectQuery, [location], (error, results) => {
     if (error) {
-      console.error('Erro durante a inserção:', error);
+      console.error('Erro ao buscar localização:', error);
       return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
     }
 
-    const itemId = results.insertId; // Capturando o ID inserido
-    
-    let codItems;
-    if (itemId >= 10 ) {
-      codItems = 'CCD00' + itemId;
-    } else if (itemId >= 100) {
-      codItems = 'CCD0' + itemId;
-    } else if (itemId >= 1000) {
-      codItems = 'CCD' + itemId;
-    } else {
-      codItems = 'CCD000' + itemId;
+    if (results.length === 0) {
+      return res.status(404).json({ message: `Localização '${location}' não encontrada` });
     }
 
-    const updateQuery = 'UPDATE items SET codItems = ? WHERE id = ?';
-    connection.query(updateQuery, [codItems, itemId], (error) => {
-      if (error) return res.status(500).send(error);
-      console.log('Valores a serem inseridos:', { itemName, entryDate: formattedDate, location, description, tempCodItems, ip, tombo });
-      res.json({
-        id: itemId,
-        message: 'Item adicionado com sucesso!',
-        codItems
+    const localizacaoId = results[0].id;
+
+    // Inserção do item na tabela items
+    const tempCodItems = 'TEMP';
+    const insertQuery = 'INSERT INTO items (itemName, entryDate, localizacao_id, description, codItems, ip, tombo) VALUES (?, ?, ?, ?, ?, ?, ?)';
+
+    connection.query(insertQuery, [itemName, formattedDate, localizacaoId, description, tempCodItems, ip, tombo], (error, results) => {
+      if (error) {
+        console.error('Erro durante a inserção:', error);
+        return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+      }
+
+      const itemId = results.insertId; // Capturando o ID inserido
+      
+      let codItems;
+      if (itemId >= 10) {
+        codItems = 'CCD00' + itemId;
+      } else if (itemId >= 100) {
+        codItems = 'CCD0' + itemId;
+      } else if (itemId >= 1000) {
+        codItems = 'CCD' + itemId;
+      } else {
+        codItems = 'CCD000' + itemId;
+      }
+
+      // Atualiza o código do item com base no ID gerado
+      const updateQuery = 'UPDATE items SET codItems = ? WHERE id = ?';
+      connection.query(updateQuery, [codItems, itemId], (error) => {
+        if (error) return res.status(500).send(error);
+        console.log('Valores a serem inseridos:', { itemName, entryDate: formattedDate, location, description, tempCodItems, ip, tombo });
+        res.json({
+          id: itemId,
+          message: 'Item adicionado com sucesso!',
+          codItems
+        });
       });
     });
   });
 });
 
-// Endpoint para obter os detalhes de um item específico pelo ID
+
+// Endpoint para obter um item específico pelo ID
 app.get('/items/:id', (req, res) => {
   const id = req.params.id;
   console.log("ID requisitado:", id);
@@ -165,35 +183,51 @@ app.get('/items/:id', (req, res) => {
 });
 
 
+
 // Endpoint para atualizar os detalhes de um item pelo ID
 app.put('/items/:id', (req, res) => {
   const id = req.params.id;
   const { itemName, entryDate, location, description, ip, tombo } = req.body;
 
- // if (!itemName || !entryDate || !location || !description || !ip || !tombo) {
-  //  return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
-//}
+  // Validate that required fields are provided
+  if (!itemName || !entryDate || !location || !description || !ip || !tombo) {
+    return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+  }
 
-  // Utilize entryDate diretamente como formattedDate
+
   const formattedDate = entryDate;
 
-  const updateQuery = 'UPDATE items SET itemName = ?, entryDate = ?, location = ?, description = ?, ip = ?, tombo = ? WHERE id = ?';
+  const selectLocationQuery = 'SELECT id FROM localizacao WHERE nome = ?';
 
-  connection.query(updateQuery, [itemName, formattedDate, location, description, ip, tombo, id], (error, results) => {
+  connection.query(selectLocationQuery, [location], (error, results) => {
     if (error) {
-      console.error('Erro durante a atualização:', error);
+      console.error('Erro ao buscar localização:', error);
       return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
     }
 
-    console.log('Valores a serem atualizados:', { itemName, entryDate: formattedDate, location, description, ip, tombo, id });
-    res.json({
-      id,
-      message: 'Item atualizado com sucesso!'
+    if (results.length === 0) {
+      return res.status(404).json({ message: `Localização '${location}' não encontrada` });
+    }
+
+    const localizacaoId = results[0].id;
+
+    // Step 2: Update the item in the database
+    const updateQuery = 'UPDATE items SET itemName = ?, entryDate = ?, localizacao_id = ?, description = ?, ip = ?, tombo = ? WHERE id = ?';
+
+    connection.query(updateQuery, [itemName, formattedDate, localizacaoId, description, ip, tombo, id], (error, results) => {
+      if (error) {
+        console.error('Erro durante a atualização:', error);
+        return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+      }
+
+      console.log('Valores atualizados:', { itemName, entryDate: formattedDate, location, description, ip, tombo, id });
+      res.json({
+        id,
+        message: 'Item atualizado com sucesso!'
+      });
     });
   });
 });
-
-
 
 // Endpoint para adicionar uma nova localização
 app.post('/localizacao', (req, res) => {
@@ -232,17 +266,27 @@ app.get('/localizacao', (req, res) => {
 });
 
 
-
 // Endpoint para obter todos os itens
 app.get('/items', (req, res) => {
-  connection.query('SELECT * FROM items', (error, results) => {
+  const selectQuery = `
+    SELECT 
+      i.id, i.itemName, i.entryDate, i.description, i.ip, i.tombo, i.codItems, 
+      l.nome AS location, l.cor
+    FROM items i
+    INNER JOIN localizacao l ON i.localizacao_id = l.id
+  `;
+
+  connection.query(selectQuery, (error, results) => {
     if (error) {
-      console.error('Erro durante a consulta:', error);
-      return res.status(500).send(error);
+      console.error('Erro ao buscar itens:', error);
+      return res.status(500).json({ error: error.message });
     }
+
     res.json({ items: results });
   });
 });
+
+
 
 // Endpoint para obter um item específico pelo ID
 app.get('/items/:id', (req, res) => {
