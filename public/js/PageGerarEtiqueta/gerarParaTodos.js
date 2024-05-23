@@ -48,7 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     position: relative;
                 }
                 .tombo-info, .local-info, .qr-code, .ip-info, .data-info, .cod-info {
-                    font-size: 8px;
+                    font-weight: bold;
+                    font-size: 7px;
                     position: absolute;
                 }
                 .tombo-info {
@@ -73,12 +74,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     border-radius: 4px;
                     border-color: #000;
                     position: absolute;
+                    background-color: #fff;
                     top: 12px;
                     right: 7px;
                 }
                 .qr-code {
-                    top: 15px;
-                    right: 11px;
+                    top: 14px;
+                    right: 10px;
                 }
                 .ip-info {
                     top: 1px;
@@ -123,8 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 ${items.map(item => `
                     new QRCode(document.getElementById('qrcode-${item.id}'), {
                         text: 'http://10.48.119.115:3000/itemInfo.html?id=${item.id}',
-                        width: 60,
-                        height: 60
+                        width: 62,
+                        height: 62
                     });
                 `).join('')}
             </script>

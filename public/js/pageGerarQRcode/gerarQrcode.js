@@ -1,11 +1,9 @@
-document.addEventListener("DOMContentLoaded", function() {
-
+document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
-    
     let navbarBurger = document.querySelector('.navbar-burger');
-    
+
     if (navbarBurger) {
-        navbarBurger.addEventListener('click', function() {
+        navbarBurger.addEventListener('click', function () {
             this.classList.toggle('is-active');
             document.getElementById(this.dataset.target).classList.toggle('is-active');
         });
@@ -14,15 +12,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     if (searchInput) {
-        searchInput.addEventListener("input", function() {
+        searchInput.addEventListener("input", function () {
             const searchValue = this.value;
             fetchAndDisplayItems(searchValue);
         });
     }
 
+
+
     const addItemForm = document.getElementById("itemForm");
     if (addItemForm) {
-        addItemForm.addEventListener("submit", function(event) {
+        addItemForm.addEventListener("submit", function (event) {
             event.preventDefault();
             addItem();
         });
@@ -36,16 +36,18 @@ document.addEventListener("DOMContentLoaded", function() {
         fetchItemInfo(id);
     }
 
-    function fetchAndDisplayItems(search = "") {
+    function fetchAndDisplayItems(search = "", ids = []) {
         let apiUrl = `/items`;
         if (search) {
             apiUrl += `?search=${search}`;
+        } else if (ids.length > 0) {
+            apiUrl += `?ids=${ids.join(',')}`;
         }
         document.body.classList.add('loading');
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
-                if (data.items && Array.isArray(data.items)) { 
+                if (data.items && Array.isArray(data.items)) {
                     displayItemsInTable(data.items);
                 } else {
                     console.error("Formato de dados inesperado:", data);
@@ -59,28 +61,15 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
-    function createElement(tag, options = {}, ...children) {
-        const element = document.createElement(tag);
-        Object.assign(element, options);
-        element.append(...children);
-        return element;
-    }
-    
-
-
     function displayItemsInTable(items) {
         const tableId = '#historyTable';
-    
-        // Verifique se a tabela já foi inicializada como DataTable
+
         if ($.fn.DataTable.isDataTable(tableId)) {
-            // Destrua a instância existente do DataTable
             $(tableId).DataTable().clear().destroy();
         }
-    
-        // Limpe o conteúdo da tabela
+
         $(tableId).empty();
-    
-        // Inicialize a tabela novamente com os novos dados
+
         const table = $(tableId).DataTable({
             paging: true,
             searching: true,
@@ -91,10 +80,17 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             data: items,
             columns: [
+                {
+                    data: null,
+                    title: '#',
+                    render: function (data, type, row) {
+                        return `<input type="checkbox" class="select-item-checkbox" data-id="${row.id}">`;
+                    }
+                },
                 { data: 'codItems', title: 'Código' },
                 { data: 'tombo', title: 'Tombo' },
                 { data: 'itemName', title: 'Nome do Item' },
-                { 
+                {
                     data: 'entryDate',
                     title: 'Data de Entrada',
                     render: function (data, type, row) {
@@ -103,14 +99,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 { data: 'location', title: 'Localização' },
                 { data: 'description', title: 'Descrição' },
-                { 
+                {
                     data: null,
                     title: 'Gerar QRcode',
                     render: function (data, type, row) {
                         return '<button class="generate-qr-button button is-info"><i class="fa-solid fa-qrcode"></i>&nbsp;Gerar</button>';
                     }
                 },
-                { 
+                {
                     data: null,
                     title: 'Acão',
                     render: function (data, type, row) {
@@ -119,29 +115,217 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             ]
         });
-    
-        // Adicione um evento de clique aos botões de geração de QR code
+
         $('#historyTable tbody').on('click', '.generate-qr-button', function () {
             const data = table.row($(this).parents('tr')).data();
             showQRCodeModal(data);
         });
-    
-        // Exemplo de evento de clique para abrir o modal de edição
+
         $('#historyTable tbody').on('click', '.edit-item-button', function () {
             const data = table.row($(this).parents('tr')).data();
             showEditItemModal(data);
         });
+
+        // Evento para atualizar o botão de impressão
+        $('#historyTable tbody').on('change', '.select-item-checkbox', function () {
+            const itemId = $(this).data('id');
+            toggleSelectedItem(itemId);
+        });
     }
-    
-    
-    
+;
 
     function formatDateToPTBR(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('pt-BR');
     }
 
- 
+    // Variável global para armazenar os IDs dos itens selecionados
+    let selectedItems = [];
+
+    // Função para adicionar ou remover um item da lista de selecionados
+    function toggleSelectedItem(itemId) {
+        const index = selectedItems.indexOf(itemId);
+        if (index === -1) {
+            selectedItems.push(itemId);
+        } else {
+            selectedItems.splice(index, 1);
+        }
+        updatePrintButton();
+    }
+
+    // Função para atualizar o botão de impressão
+    function updatePrintButton() {
+        const selectedItemsCount = selectedItems.length;
+        const printButtonContainer = document.getElementById('printButtonContainer');
+        if (selectedItemsCount > 0) {
+            printButtonContainer.innerHTML = `<button id="printSelectedItemsButton" class="button is-warning is-small"><i class="fa-solid fa-print"></i>&nbsp;Imprimir etiquetas selecionadas (${selectedItemsCount})</button>`;
+            document.getElementById('printSelectedItemsButton').addEventListener('click', function () {
+                printSelectedItems();
+            });
+        } else {
+            printButtonContainer.innerHTML = '';
+        }
+    }
+
+    // Função para imprimir os itens selecionados
+    function printSelectedItems() {
+        if (selectedItems.length > 0) {
+            fetchSelectedItems(selectedItems);
+        } else {
+            alert('Selecione pelo menos um item para imprimir.');
+        }
+    }
+
+    // Função para buscar os itens selecionados
+    function fetchSelectedItems(ids) {
+        let apiUrl = `/items?ids=${ids.join(',')}`;
+        document.body.classList.add('loading');
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.items && Array.isArray(data.items)) {
+                    const selectedItems = data.items.filter(item => ids.includes(item.id));
+                    openPrintWindow(selectedItems);
+                } else {
+                    console.error("Formato de dados inesperado:", data);
+                }
+            })
+            .catch(error => {
+                console.error("Erro ao buscar itens:", error);
+            })
+            .finally(() => {
+                document.body.classList.remove('loading');
+            });
+    }
+
+// Função para abrir a janela de impressão
+function openPrintWindow(selectedItems) {
+    const itemsPerPage = 48; // Defina a quantidade de itens por página
+    const numberOfPages = Math.ceil(selectedItems.length / itemsPerPage);
+    const printWindow = window.open('', '_blank');
+    
+    let printContent = `
+        <html>
+        <head>
+            <title>Imprimir Etiquetas</title>
+            <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css'> 
+            <style>
+                .a4-size {
+                    width: 210mm;
+                    height: 297mm;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-content: flex-start;
+                    padding: 3.85mm;
+                    background-color: white;
+                    overflow: hidden;
+                    page-break-after: always;
+                }
+                .grid-item {
+                    -webkit-print-color-adjust: exact;
+                    width: 185px;
+                    height: 85px;
+                    border-radius: 10px;
+                    border: 1px solid black;
+                    margin: 3px;
+                    position: relative;
+                }
+                .tombo-info, .local-info, .qr-code, .ip-info, .data-info, .cod-info {
+                    font-weight: bold;
+                    font-size: 7px;
+                    position: absolute;
+                }
+                .tombo-info {
+                    top: 1px;
+                    left: 5px;
+                }
+                .local-info {
+                    top: 67px;
+                    left: 5px;
+                }
+                .logo {
+                    width: 120px;
+                    height: 65px;
+                    position: absolute;
+                    top: 15px;
+                    left: -5px;
+                }
+                .quadrado {
+                    width: 68px;
+                    height: 66px;
+                    border: 1px solid;
+                    border-radius: 4px;
+                    border-color: #000;
+                    position: absolute;
+                    background-color: #fff;
+                    top: 12px;
+                    right: 7px;
+                }
+                .qr-code {
+                    top: 14px;
+                    right: 10px;
+                }
+                .ip-info {
+                    top: 1px;
+                    right: 126px;
+                }
+                .data-info {
+                    top: 1px;
+                    right: 60px;
+                }
+                .cod-info {
+                    top: 65px;
+                    right: 110px;
+                }
+            </style>
+        </head>
+        <body>
+    `;
+
+    for (let page = 0; page < numberOfPages; page++) {
+        printContent += `<div class="a4-size">`;
+        const start = page * itemsPerPage;
+        const end = start + itemsPerPage;
+        const itemsForPage = selectedItems.slice(start, end);
+
+        itemsForPage.forEach(item => {
+            printContent += `
+                <div class="grid-item" style="background-color: ${item.cor};">
+                    <img class="logo" src="images/logo.png">
+                    <div class="tombo-info">TOMBO:${item.tombo} ${item.ip ? ` IP:${item.ip}` : ''} COD:${item.codItems}</div>
+                    <div class="local-info">Local: ${item.location}</div>
+                    <div class="quadrado"></div>
+                    <div class="qr-code" id="qrcode-${item.id}"></div>
+                </div>`;
+        });
+
+        printContent += `</div>`;
+    }
+
+    printContent += `
+        <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+        <script>
+            ${selectedItems.map(item => `
+                new QRCode(document.getElementById('qrcode-${item.id}'), {
+                    text: 'http://10.48.119.115:3000/itemInfo.html?id=${item.id}',
+                    width: 62,
+                    height: 62
+                });
+            `).join('')}
+        </script>
+        </body>
+        </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.onload = function () {
+        printWindow.print();
+    };
+}
+
+
+    
 
     function loadLocations(selectedLocation) {
         fetch('/localizacao')
@@ -328,18 +512,18 @@ function showUpdateConfirmationModal(confirmCallback) {
                 },
                     createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo', style: 'width: 120px; height: 65px; position: absolute; top: 15px; left: -5px;' }),
                     createElement('div', { className: 'item-details' },
-                        createElement('div', { className: 'tombo-info', style: 'font-size: 8px; position: absolute; white-space: nowrap; top: 1px; left: 5px;' },
+                        createElement('div', { className: 'tombo-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 1px; left: 5px;' },
                             createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)
                         ),
 
-                        createElement('div', { className: 'local-info', style: 'font-size: 8px; position: absolute; white-space: nowrap; top: 67px; left: 5px;' },
+                        createElement('div', { className: 'local-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 67px; left: 5px;' },
                             createElement('div', { className: 'info-value' }, 'Local: ', item.location)
                         ),
 
                         createElement('div', { className: 'quadrado', style: 'width: 68px; height: 66px; border: 1px solid; border-radius: 4px; border-color: #000; position: absolute; top: 12px; right: 7px;' }),
                     ),
-                    createElement('div', { className: 'qr-code ', style: 'position: absolute; top: 15px; right: 11px;' },
-                        createElement('div', { id: 'qrcode', style: 'width: 60px; height: 60px;' })
+                    createElement('div', { className: 'qr-code ', style: 'position: absolute; top: 14px; right: 10px;' },
+                        createElement('div', { id: 'qrcode', style: 'width: 62px; height: 62px;' })
                     )
                 )
             ),
@@ -355,8 +539,8 @@ function showUpdateConfirmationModal(confirmCallback) {
     const itemUrl = `http://10.48.119.115:3000/itemInfo.html?id=${item.id}`;
     new QRCode(document.getElementById('qrcode'), {
         text: itemUrl,
-        width: 60,
-        height: 60
+        width: 62,
+        height: 62
     });
 
 

@@ -12,6 +12,19 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/bm/dt-1.13.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .button-container {
+          display: flex;
+          justify-content: space-between; /* Para espaçar os itens */
+          align-items: center; /* Para alinhar verticalmente */
+        }
+    
+        /* Estilo extra para o botão imprimir */
+        #printAllButton {
+          margin-right: 10px; /* Ajuste opcional para espaçamento */
+        }
+      </style>
 </head>
 
 <body>
@@ -31,9 +44,14 @@
     </nav>
     <section class="section">
         <div class="container">
-            <!-- Botão de imprimir para todos -->
-        <button id="printAllButton" class="button is-primary is-small"><i class="fa-solid fa-print"></i> &nbsp;Imprimir todos</button>
+
+            <div class="button-container">
+                <button id="printAllButton" class="button is-primary is-small"><i class="fa-solid fa-print"></i> &nbsp;Imprimir todos</button>
+                <div id="printButtonContainer"></div>
+              </div>
+        
             <div class="table-container">
+                
                 <table class="table is-fullwidth is-hoverable mt-5" id="historyTable">
                     <thead>
                         <tr>
