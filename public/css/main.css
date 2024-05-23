@@ -44,6 +44,7 @@
   background-color: #f0f0f0;
 }
 
+/*
 .edit-item-button{
   max-height: 24px;
 }
@@ -51,6 +52,7 @@
 .generate-qr-button{
   max-height: 20px;
 }
+*/
 
 .hide-if-null {
   display: none;
@@ -82,3 +84,10 @@
 .control.is-expanded {
   flex: 1;
 }
+
+.button-container {
+  display: flex;
+  gap: 10px; /* Espaçamento entre os botões */
+  align-items: center; /* Alinhamento vertical dos botões */
+}
+

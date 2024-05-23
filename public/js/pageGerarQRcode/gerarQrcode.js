@@ -18,8 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
-
     const addItemForm = document.getElementById("itemForm");
     if (addItemForm) {
         addItemForm.addEventListener("submit", function (event) {
@@ -35,6 +33,27 @@ document.addEventListener("DOMContentLoaded", function () {
     if (id) {
         fetchItemInfo(id);
     }
+
+    // Atualize a função deleteLocation para deleteItem
+    function deleteItem(id) {
+        fetch(`/items/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao excluir item');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(`Item ${id} excluído com sucesso`);
+            fetchAndDisplayItems(); // Atualiza a tabela após a exclusão
+        })
+        .catch(error => {
+            console.error('Erro ao excluir item:', error);
+        });
+    }
+
 
     function fetchAndDisplayItems(search = "", ids = []) {
         let apiUrl = `/items`;
@@ -103,17 +122,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: null,
                     title: 'Gerar QRcode',
                     render: function (data, type, row) {
-                        return '<button class="generate-qr-button button is-info"><i class="fa-solid fa-qrcode"></i>&nbsp;Gerar</button>';
+                        return '<button class="button is-small is-info generate-qr-button"><i class="fa-solid fa-qrcode"></i>&nbsp;Gerar</button>';
                     }
                 },
                 {
                     data: null,
-                    title: 'Acão',
+                    title: 'Editar',
+                    orderable: false,
                     render: function (data, type, row) {
-                        return '<button class="edit-item-button button is-small is-warning"><i class="fa-solid fa-pencil"></i>&nbsp;Editar</button>';
+                        return `
+                            <div class="buttons is-grouped">
+                                <div class="button is-small is-warning edit-item-button"><i class="fa-solid fa-pencil"></i>&nbsp;Editar</div>
+                                <div class="button is-small is-danger delete-item-button" data-id="${row.id}"><i class="fa-solid fa-trash"></i>&nbsp;Excluir</div>
+                            </div>`;
                     }
                 }
-            ]
+            ]            
         });
 
         $('#historyTable tbody').on('click', '.generate-qr-button', function () {
@@ -131,9 +155,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const itemId = $(this).data('id');
             toggleSelectedItem(itemId);
         });
-    }
-;
 
+        // Evento para botões de exclusão na tabela
+        $('#historyTable tbody').on('click', '.delete-item-button', function () {
+            const id = $(this).data('id');
+            showDeleteConfirmationModal(id);
+        });
+
+    };
+
+    
     function formatDateToPTBR(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('pt-BR');
@@ -158,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedItemsCount = selectedItems.length;
         const printButtonContainer = document.getElementById('printButtonContainer');
         if (selectedItemsCount > 0) {
-            printButtonContainer.innerHTML = `<button id="printSelectedItemsButton" class="button is-warning is-small"><i class="fa-solid fa-print"></i>&nbsp;Imprimir etiquetas selecionadas (${selectedItemsCount})</button>`;
+            printButtonContainer.innerHTML = `<button id="printSelectedItemsButton" class="button is-warning is-small"><i class="fa-solid fa-check-double"></i>&nbsp;Imprimir etiquetas selecionadas (${selectedItemsCount})</button>`;
             document.getElementById('printSelectedItemsButton').addEventListener('click', function () {
                 printSelectedItems();
             });
@@ -197,6 +228,53 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.body.classList.remove('loading');
             });
     }
+
+    // Função para mostrar o modal de confirmação de exclusão
+function showDeleteConfirmationModal(id) {
+    // Busca os dados do item para mostrar no modal de confirmação
+    fetch(`/items/${id}`)
+        .then(response => response.json())
+        .then(item => {
+            const modal = createElement('div', { className: 'modal is-active' },
+                createElement('div', { className: 'modal-background' }),
+                createElement('div', { className: 'modal-card' },
+                    createElement('header', { className: 'modal-card-head' },
+                        createElement('p', { className: 'modal-card-title' }, 'Confirmar Exclusão'),
+                        createElement('button', { className: 'delete', 'aria-label': 'close' })
+                    ),
+                    createElement('section', { className: 'modal-card-body' },
+                        createElement('p', {}, `Você tem certeza que deseja excluir o item ${item.codItems}?`)
+                    ),
+                    createElement('footer', { className: 'modal-card-foot' },
+                        createElement('button', { className: 'button is-danger', id: 'confirmDeleteButton' }, 'Excluir'),
+                        createElement('button', { className: 'button', id: 'cancelDeleteButton' }, 'Cancelar')
+                    )
+                )
+            );
+
+            document.body.appendChild(modal);
+
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+            const cancelDeleteButton = document.getElementById('cancelDeleteButton');
+            const closeButton = modal.querySelector('.delete');
+
+            confirmDeleteButton.addEventListener('click', function () {
+                deleteItem(item.id); // Chama a função de exclusão
+                document.body.removeChild(modal);
+            });
+
+            cancelDeleteButton.addEventListener('click', function () {
+                document.body.removeChild(modal);
+            });
+
+            closeButton.addEventListener('click', function () {
+                document.body.removeChild(modal);
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao buscar item para exclusão:', error);
+        });
+}
 
 // Função para abrir a janela de impressão
 function openPrintWindow(selectedItems) {

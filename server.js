@@ -163,6 +163,28 @@ app.post('/items', (req, res) => {
   });
 });
 
+// Exemplo de rota para exclusão de item
+app.delete('/items/:id', (req, res) => {
+  const itemId = req.params.id;
+
+  // Aqui você implementa a lógica para excluir o item do banco de dados
+  const deleteQuery = 'DELETE FROM items WHERE id = ?';
+
+  connection.query(deleteQuery, [itemId], (error, results) => {
+      if (error) {
+          console.error('Erro durante a exclusão:', error);
+          return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+      }
+
+      if (results.affectedRows === 0) {
+          return res.status(404).json({ message: `Item ${itemId} não encontrado` });
+      }
+
+      res.json({ message: `Item ${itemId} excluído com sucesso` });
+  });
+});
+
+
 
 // Endpoint para obter um item específico pelo ID
 app.get('/items/:id', (req, res) => {
@@ -229,6 +251,70 @@ app.put('/items/:id', (req, res) => {
   });
 });
 
+
+// Endpoint para excluir uma localização específica pelo ID
+app.delete('/localizacao/:id', (req, res) => {
+  const id = req.params.id;
+
+  const deleteQuery = 'DELETE FROM localizacao WHERE id = ?';
+
+  connection.query(deleteQuery, [id], (error, results) => {
+      if (error) {
+          console.error('Erro durante a exclusão:', error);
+          return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+      }
+
+      console.log('Localização excluída com sucesso');
+      res.json({ message: 'Localização excluída com sucesso!' });
+  });
+});
+
+
+// Endpoint para obter uma localização específica pelo ID
+app.get('/localizacao/:id', (req, res) => {
+  const id = req.params.id;
+
+  const query = 'SELECT * FROM localizacao WHERE id = ?';
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error("Erro durante a consulta:", error);
+      return res.status(500).send(error);
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Localização não encontrada" });
+    }
+
+    res.json(results[0]);
+  });
+});
+
+// Endpoint para atualizar uma localização pelo ID
+app.put('/localizacao/:id', (req, res) => {
+  const id = req.params.id;
+  const { nome, cor } = req.body;
+
+  if (!nome || !cor) {
+    return res.status(400).json({ message: 'Nome e cor da localização são obrigatórios' });
+  }
+
+  const updateQuery = 'UPDATE localizacao SET nome = ?, cor = ? WHERE id = ?';
+
+  connection.query(updateQuery, [nome, cor, id], (error, results) => {
+    if (error) {
+      console.error('Erro durante a atualização:', error);
+      return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
+    }
+
+    console.log('Localização atualizada:', { nome, cor, id });
+    res.json({
+      id,
+      message: 'Localização atualizada com sucesso!'
+    });
+  });
+});
+
+
 // Endpoint para adicionar uma nova localização
 app.post('/localizacao', (req, res) => {
   const { nome, cor } = req.body;
@@ -264,7 +350,6 @@ app.get('/localizacao', (req, res) => {
     res.json({ localizacoes: results });
   });
 });
-
 
 // Endpoint para obter todos os itens
 app.get('/items', (req, res) => {
