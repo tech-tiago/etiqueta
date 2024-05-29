@@ -466,6 +466,8 @@ function showEditItemModal(item) {
                 createElement('button', { id: 'confirmEditButton', className: 'button is-success' }, 'Salvar')
             )
         )
+
+        
     );
 
     document.body.appendChild(modal);
@@ -513,6 +515,7 @@ function showEditItemModal(item) {
                 // Trate erros, exiba mensagens de erro, etc.
                 console.error(error);
             });
+            
         });
     });
 
@@ -568,10 +571,9 @@ function showUpdateConfirmationModal(confirmCallback) {
         // Feche o modal de confirmação
         document.body.removeChild(modal);
     });
+    
 }
 
-   // Exiba um alerta de sucesso
-   // showSuccessNotification('Item atualizado com sucesso.');
 
 
    function showQRCodeModal(item) {
@@ -591,7 +593,7 @@ function showUpdateConfirmationModal(confirmCallback) {
                     createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo', style: 'width: 120px; height: 65px; position: absolute; top: 15px; left: -5px;' }),
                     createElement('div', { className: 'item-details' },
                         createElement('div', { className: 'tombo-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 1px; left: 5px;' },
-                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)
+                            createElement('div', { className: 'info-value' },  'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)
                         ),
 
                         createElement('div', { className: 'local-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 67px; left: 5px;' },
@@ -657,8 +659,6 @@ function showUpdateConfirmationModal(confirmCallback) {
             document.body.removeChild(modal);
         });
     }    
-    
-
     
     function createElement(tag, options = {}, ...children) {
         const element = document.createElement(tag);

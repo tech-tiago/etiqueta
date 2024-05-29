@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationArea = document.getElementById('notification-area');
     const corInput = document.getElementById('corInput');
     const corSelector = document.getElementById('corSelector');
+    const corPreview = document.getElementById('corPreview');
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -35,9 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Atualiza o valor do input oculto quando o usuário seleciona uma cor
+    // Atualiza o valor do input oculto e a cor da etiqueta de exemplo quando o usuário seleciona uma cor
     corSelector.addEventListener('input', () => {
         corInput.value = corSelector.value;
+        corPreview.style.backgroundColor = corSelector.value;
     });
 
     function showNotification(type, message) {

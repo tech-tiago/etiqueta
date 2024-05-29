@@ -47,12 +47,28 @@
                     <input class="input" type="text" name="nome" placeholder="Nome da Localização" required>
                 </div>
             </div>
-            <div class="field">
-                <label class="label">Cor da Localização</label>
-                <div class="control">
-                    <input type="color" id="corSelector" name="cor" value="#000000" style="height: 2.25em; padding: 0;">
-                    <!-- Input oculto para armazenar a cor selecionada -->
-                    <input type="hidden" id="corInput" name="cor" required>
+            <div class="columns">
+                <div class="column is-half">
+                    <div class="field">
+                        <label class="label">Cor da Localização</label>
+                        <div class="control">
+                            <input type="color" id="corSelector" name="cor" value="#000000" style="height: 2.25em; padding: 0;">
+                            <!-- Input oculto para armazenar a cor selecionada -->
+                            <input type="hidden" id="corInput" name="cor" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-half">
+                    <!-- Pré-visualização da etiqueta -->
+                    <div id="corPreview" class="grid-item">
+                        <div class="tombo-info">Tombo:</div>
+                        <div class="local-info">Local:</div>
+                        <div class="quadrado">
+                            <div class="qr-code"> <img src="/images/qr.png" alt="QRcode"> </div>
+                        </div>
+                        <div class="ip-info">IP:</div>
+                        <div class="cod-info">Código:</div>
+                    </div>
                 </div>
             </div>
             <div class="field">
@@ -61,8 +77,6 @@
                 </div>
             </div>
         </form>
-        
-        
     </div>
 </section>
 
