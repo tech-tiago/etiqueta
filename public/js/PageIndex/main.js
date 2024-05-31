@@ -1,59 +1,95 @@
+// Verifica se o token CSRF está presente e válido
+function validateCSRFToken() {
+  const csrfToken = document.querySelector('input[name="_csrf"]');
+  if (!csrfToken || csrfToken.value !== 'seu_token_csrf') { // Trocar pelo token CSRF gerado pelo servidor
+    displayNotification('Token CSRF inválido.', 'error');
+    return false;
+  }
+  return true;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Carregar as localizações no combo box
   fetch('/localizacao')
-      .then(response => response.json())
-      .then(data => {
-          const locationSelect = document.querySelector('select[name="location"]');
-          data.localizacoes.forEach(localizacao => {
-              const option = document.createElement('option');
-              option.value = localizacao.nome;
-              option.textContent = localizacao.nome;
-              locationSelect.appendChild(option);
-          });
-      })
-      .catch(error => {
-          console.error('Erro ao carregar as localizações:', error);
-          displayNotification('Ocorreu um erro ao carregar as localizações.', 'error');
+    .then(response => response.json())
+    .then(data => {
+      const locationSelect = document.querySelector('select[name="location"]');
+      data.localizacoes.forEach(localizacao => {
+        const option = document.createElement('option');
+        option.value = localizacao.nome;
+        option.textContent = localizacao.nome;
+        locationSelect.appendChild(option);
       });
+    })
+    .catch(error => {
+      console.error('Erro ao carregar as localizações:', error);
+      displayNotification('Ocorreu um erro ao carregar as localizações.', 'error');
+    });
 
   const addItemForm = document.getElementById("itemForm");
   if (addItemForm) {
-      addItemForm.addEventListener("submit", function (event) {
-          event.preventDefault();
-          showConfirmationModal();
-      });
+    // Adicionar token CSRF ao formulário
+    addCsrfTokenToForm();
+
+    // Ao submeter o formulário
+    addItemForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      if (validateForm(addItemForm) && validateCSRFToken()) {
+        showConfirmationModal();
+      }
+    });
   }
 });
+
+/**
+ * Valida o formulário de adição de item.
+ * @param {HTMLFormElement} form - O formulário a ser validado.
+ * @returns {boolean} - Retorna true se o formulário for válido, false caso contrário.
+ */
+function validateForm(form) {
+  const itemName = form.elements['itemName'].value.trim();
+  const entryDate = form.elements['entryDate'].value.trim();
+  const location = form.elements['location'].value.trim();
+  const description = form.elements['description'].value.trim();
+  const tombo = form.elements['tombo'].value.trim();
+
+  if (!itemName || !entryDate || !location || !description || !tombo) {
+    displayNotification('Todos os campos são obrigatórios.', 'error');
+    return false;
+  }
+
+  return true;
+}
 
 function showConfirmationModal() {
   const modal = document.createElement("div");
   modal.className = "modal is-active";
   modal.innerHTML = `
-      <div class="modal-background"></div>
-      <div class="modal-card">
-          <header class="modal-card-head">
-              <p class="modal-card-title">Confirmação</p>
-              <button class="delete" aria-label="close"></button>
-          </header>
-          <section class="modal-card-body">
-              Deseja realmente cadastrar o item?
-          </section>
-          <footer class="modal-card-foot">
-              <button class="button is-success" id="confirm-add">Confirmar</button>
-              <button class="button" id="cancel-add">Cancelar</button>
-          </footer>
-      </div>
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Confirmação</p>
+            <button class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+            Deseja realmente cadastrar o item?
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" id="confirm-add">Confirmar</button>
+            <button class="button" id="cancel-add">Cancelar</button>
+        </footer>
+    </div>
   `;
   document.body.appendChild(modal);
 
   modal.querySelector(".delete").addEventListener("click", () => closeModal(modal));
   modal.querySelector("#cancel-add").addEventListener("click", () => closeModal(modal));
   modal.querySelector("#confirm-add").addEventListener("click", () => {
-      actualAddItem();
-      closeModal(modal);
+    actualAddItem();
+    closeModal(modal);
   });
 }
-
 
 /**
  * Fecha a janela modal.
@@ -68,7 +104,7 @@ function closeModal(modal) {
  */
 function actualAddItem() {
   const form = document.forms['itemForm'];
-  
+
   // Corrigindo a formatação da data de entrada
   const entryDateElement = form.elements['entryDate'];
   let formattedDate = null;
@@ -83,15 +119,15 @@ function actualAddItem() {
     location: form.elements['location'].value,
     description: form.elements['description'].value,
     ip: form.elements['ip'].value,
-    tombo: form.elements['tombo'].value
+    tombo: form.elements['tombo'].value,
+    _csrf: form.elements['_csrf'].value // Adicionar token CSRF ao corpo da requisição
   };
 
-
   fetch('/items', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
     .then(response => response.json())
     .then(data => {
       const message = data.message || data.error;

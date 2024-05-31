@@ -108,10 +108,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 { data: 'codItems', title: 'Código' },
                 { data: 'tombo', title: 'Tombo' },
-                { data: 'itemName', title: 'Nome do Item' },
+                { data: 'itemName', title: 'Item' },
                 {
                     data: 'entryDate',
-                    title: 'Data de Entrada',
+                    title: 'Entrada',
                     render: function (data, type, row) {
                         return formatDateToPTBR(data);
                     }
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 { data: 'description', title: 'Descrição' },
                 {
                     data: null,
-                    title: 'Gerar QRcode',
+                    title: 'QRcode',
                     render: function (data, type, row) {
                         return '<button class="button is-small is-info generate-qr-button"><i class="fa-solid fa-qrcode"></i>&nbsp;Gerar</button>';
                     }
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedItemsCount = selectedItems.length;
         const printButtonContainer = document.getElementById('printButtonContainer');
         if (selectedItemsCount > 0) {
-            printButtonContainer.innerHTML = `<button id="printSelectedItemsButton" class="button is-warning is-small"><i class="fa-solid fa-check-double"></i>&nbsp;Imprimir etiquetas selecionadas (${selectedItemsCount})</button>`;
+            printButtonContainer.innerHTML = `<button id="printSelectedItemsButton" class="button is-warning"><i class="fa-solid fa-check-double"></i>&nbsp;Imprimir etiquetas selecionadas (${selectedItemsCount})</button>`;
             document.getElementById('printSelectedItemsButton').addEventListener('click', function () {
                 printSelectedItems();
             });

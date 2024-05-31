@@ -4,49 +4,67 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(express.static('public'));
 app.use(express.static('node_modules'));
-app.use(cors({ origin: 'http://localhost:3000' }));
 
 // Middlewares
-app.use(cors());
 app.use(bodyParser.json());
-
-// Configuração para processar dados do formulário
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(cookieParser());
 
 // Configuração para gerenciamento de sessão
 app.use(session({
-    secret: 'xR5A%Yz!9vWQs2T#eFD',
-    resave: false,
-    saveUninitialized: false
+  secret: 'xR5A%Yz!9vWQs2T#eFD',
+  resave: false,
+  saveUninitialized: false,
 }));
+
+// Configuração de token CSRF
+const csrfProtection = csrf({ cookie: true });
+
+app.use(csrfProtection);
+
+// Middleware para verificar sessão
+const checkSession = (req, res, next) => {
+  if (!req.session.user) {
+    return res.status(401).send('Acesso não autorizado');
+  }
+  next();
+};
+
+// Criando conexão com o banco
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root', // seu usuário
+  password: '', // sua senha
+  database: 'etiqueta', // seu banco de dados
+  timezone: '-03:00',  // Use UTC-3, por exemplo, para "America/Sao_Paulo"
+  charset: 'utf8mb4', // Suporte a todos os caracteres UTF e emojis.
+  connectTimeout: 10000, // Tempo em milissegundos antes de uma tentativa de conexão ser considerada falha
+});
+
+connection.connect((error) => {
+  if (error) throw error;
+  console.log('Conectado ao banco de dados MySQL.');
+});
+
+// Rota para obter o token CSRF
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
 // Rota para a página raiz
 app.get('/', (req, res) => {
-  // Verifica se o usuário está autenticado
-  if (req.session.user) {
+  if (!req.session.user) {
+    res.sendFile(path.join(__dirname, 'login.html'));
+  } else {
     res.redirect('/index.html');
-  } else {
-    res.sendFile(path.join(__dirname, '/login.html'));
   }
 });
-
-
-// Rota para a página de index (protegida)
-app.get('/index.html', (req, res) => {
-  // Verifica se o usuário está autenticado
-  if (req.session.user) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-  } else {
-    // Se não estiver autenticado, redireciona de volta para a página de login
-    res.redirect('/');
-  }
-});
-
 
 // Rota para o processo de login
 app.post('/login', (req, res) => {
@@ -67,35 +85,30 @@ app.post('/login', (req, res) => {
       req.session.user = user;
 
       // Redireciona para a página index após o login bem-sucedido
-      return res.redirect('/index.html');
+      res.redirect('/index.html');
     } else {
       // Redireciona de volta para a página de login se as credenciais estiverem incorretas
-      return res.status(401).send('Credenciais inválidas');
+      res.status(401).send('Credenciais inválidas');
     }
   });
 });
 
-
-// Rota para a página de localização
-app.get('/localizacao.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/localizacao.html'));
+// Rota protegida index.html
+app.get('/index.html', checkSession, (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Criando conexão com o banco
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // seu usuário
-  password: '', // sua senha
-  database: 'etiqueta', // seu banco de dados
-  timezone: '-03:00',  // Use UTC-3, por exemplo, para "America/Sao_Paulo"
-  charset: 'utf8mb4', // Suporte a todos os caracteres UTF e emojis.
-  connectTimeout: 10000, // Tempo em milissegundos antes de uma tentativa de conexão ser considerada falha
+// Rota para logout
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Erro ao fazer logout:', err);
+      return res.status(500).json({ error: 'Erro ao fazer logout' });
+    }
+    res.redirect('/');
+  });
 });
 
-connection.connect((error) => {
-  if (error) throw error;
-  console.log('Conectado ao banco de dados MySQL.');
-});
 
 
 // Endpoint para adicionar um novo item
@@ -139,11 +152,11 @@ app.post('/items', (req, res) => {
       
       let codItems;
       if (itemId >= 10) {
-        codItems = 'CCD00' + itemId;
+        codItems = 'CPS0000' + itemId;
       } else if (itemId >= 100) {
-        codItems = 'CCD0' + itemId;
+        codItems = 'CPS000' + itemId;
       } else if (itemId >= 1000) {
-        codItems = 'CCD' + itemId;
+        codItems = 'CPS00' + itemId;
       } else {
         codItems = 'CCD000' + itemId;
       }

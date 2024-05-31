@@ -5,41 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Localização</title>
     <link rel="icon" href="#" type="image/x-icon">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/etiqueta.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-extensions@6.2.7/dist/css/bulma-extensions.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-    </a>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
         <div id="navbarMenu" class="navbar-menu">
-            <a href="index.html" class="navbar-item"><i class="fas fa-home"></i> Home</a>
-            <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i> Gerar QR Code</a>
-            
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
-                    <i class="fas fa-map-marker-alt"></i>Localização
-                </a>
-                <div class="navbar-dropdown">
-                    <a href="localizacao.html" class="navbar-item">Cadastro de Localização</a>
-                    <a href="editar-localizacao.html" class="navbar-item">Editar Localização</a>
+            <div class="navbar-start">
+                <a href="index.html" class="navbar-item"><i class="fas fa-home"></i>&nbsp;Home</a>
+                <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i>&nbsp;Gerar QR Code</a>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <i class="fas fa-map-marker-alt"></i>&nbsp;Localização
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a href="localizacao.html" class="navbar-item">Cadastro de Localização</a>
+                        <a href="editar-localizacao.html" class="navbar-item">Editar Localização</a>
+                    </div>
                 </div>
+                <a href="login.html" class="navbar-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
             </div>
-            
-            <a href="login.html" class="navbar-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
         </div>
     </nav>
     
+    
 <section class="section">
     <div class="container">
+        <h1 class="title">Cadastro de Localização</h1>
         <!-- Formulário para adicionar nova localização -->
-        <form id="localizacaoForm">
+        <form id="localizacaoForm" class="box">
             <div id="notification-area"></div>
             <div class="field">
                 <label class="label">Nome da Localização</label>
@@ -52,7 +55,7 @@
                     <div class="field">
                         <label class="label">Cor da Localização</label>
                         <div class="control">
-                            <input type="color" id="corSelector" name="cor" value="#000000" style="height: 2.25em; padding: 0;">
+                            <input type="color" id="corSelector" name="cor" value="#000000" class="input" required>
                             <!-- Input oculto para armazenar a cor selecionada -->
                             <input type="hidden" id="corInput" name="cor" required>
                         </div>
@@ -60,14 +63,15 @@
                 </div>
                 <div class="column is-half">
                     <!-- Pré-visualização da etiqueta -->
+                    <label class="label">Preview da etiqueta</label>
                     <div id="corPreview" class="grid-item">
-                        <div class="tombo-info">Tombo:</div>
-                        <div class="local-info">Local:</div>
+                        <div class="tombo-info">Tombo: 160001</div>
+                        <div class="local-info">Local: Suporte técnico</div>
                         <div class="quadrado">
                             <div class="qr-code"> <img src="/images/qr.png" alt="QRcode"> </div>
                         </div>
-                        <div class="ip-info">IP:</div>
-                        <div class="cod-info">Código:</div>
+                        <div class="ip-info">IP: 127.1.1.1</div>
+                        <div class="cod-info">Código: CPS000000</div>
                     </div>
                 </div>
             </div>

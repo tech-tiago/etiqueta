@@ -5,38 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Localização</title>
     <link rel="icon" href="#" type="image/x-icon">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.2/css/bulma.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/v/bm/dt-1.13.6/datatables.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
-    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-    </a>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
         <div id="navbarMenu" class="navbar-menu">
-            <a href="index.html" class="navbar-item"><i class="fas fa-home"></i> Home</a>
-            <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i> Gerar QR Code</a>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link"><i class="fas fa-map-marker-alt"></i> Localização</a>
-                <div class="navbar-dropdown">
-                    <a href="localizacao.html" class="navbar-item">Cadastro de Localização</a>
-                    <a href="editar-localizacao.html" class="navbar-item">Editar Localização</a>
+            <div class="navbar-start">
+                <a href="index.html" class="navbar-item"><i class="fas fa-home"></i>&nbsp;Home</a>
+                <a href="gerar-qrcode.html" class="navbar-item"><i class="fas fa-qrcode"></i>&nbsp;Gerar QR Code</a>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <i class="fas fa-map-marker-alt"></i>&nbsp;Localização
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a href="localizacao.html" class="navbar-item">Cadastro de Localização</a>
+                        <a href="editar-localizacao.html" class="navbar-item">Editar Localização</a>
+                    </div>
                 </div>
+                <a href="login.html" class="navbar-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
             </div>
-            <a href="login.html" class="navbar-item"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
         </div>
     </nav>
-    
+
     <section class="section">
         <div class="container">
             <h1 class="title">Editar Localização</h1>
-            <div class="table-container">
+            <div class="table-container box">
                 <table class="table is-fullwidth is-hoverable" id="localizacaoTable">
                     <thead>
                         <tr>

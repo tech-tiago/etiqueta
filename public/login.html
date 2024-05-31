@@ -1,3 +1,4 @@
+<!-- login.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -5,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Itens</title>
-    <link rel="icon" href="#" type="image/x-icon">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/datepicker/datepicker.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
@@ -20,13 +20,14 @@
             <div class="container">
                 <div class="columns is-centered">
                     <div class="column is-half">
-                        <div class="box">
+                        <div id="notification-area"></div> <!-- Área de Notificação -->
 
-                            <form action="/login" method="POST">
+                        <div class="box">
+                            <form id="loginForm">
                                 <div class="field">
                                   <label class="label">Usuário</label>
                                   <div class="control has-icons-left">
-                                    <input class="input" type="text" name="username" placeholder="Seu usuário">
+                                    <input class="input" type="text" id="username" name="username" placeholder="Seu usuário">
                                     <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
                                   </div>
                                 </div>
@@ -34,7 +35,7 @@
                                 <div class="field">
                                   <label class="label">Senha</label>
                                   <div class="control has-icons-left">
-                                    <input class="input" type="password" name="password" placeholder="Sua senha">
+                                    <input class="input" type="password" id="password" name="password" placeholder="Sua senha">
                                     <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
                                   </div>
                                 </div>
