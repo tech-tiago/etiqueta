@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Localização</title>
+    <title>Cadastro de Usuário</title>
     <link rel="icon" href="#" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
@@ -38,29 +38,49 @@
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container">
-            <h1 class="title">Editar Localização</h1>
-            <div class="table-container box">
-                <table class="table is-fullwidth is-hoverable" id="localizacaoTable">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Cor</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Os itens serão inseridos aqui pelo JavaScript -->
-                    </tbody>
-                </table>
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-half">
+                        <div id="notification-area"></div> <!-- Área de Notificação -->
+
+                        <div class="box">
+                            <form id="registerForm">
+                                <div class="field">
+                                    <label class="label">Usuário</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input" type="text" id="username" name="username" placeholder="Seu usuário" required>
+                                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Senha</label>
+                                    <div class="control has-icons-left">
+                                        <input class="input" type="password" id="password" name="password" placeholder="Sua senha" required>
+                                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary is-fullwidth">
+                                            <span class="icon"><i class="fas fa-user-plus"></i></span>
+                                            <span>Cadastrar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Códigos JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/v/bm/dt-1.13.6/datatables.min.js"></script>
-    <script src="js/PageLocalizacao/editarLocalizacao.js"></script>
+    <script src="js/PageRegister/register.js"></script>
 </body>
 </html>

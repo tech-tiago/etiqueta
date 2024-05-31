@@ -1,96 +1,109 @@
 const express = require('express');
-const session = require('express-session');
-const mysql = require('mysql2');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mysql = require('mysql2');
+const passport = require('passport');
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
+const auth = require('./auth');
 
 const app = express();
-app.use(express.static('public'));
-app.use(express.static('node_modules'));
 
 // Middlewares
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(logger('dev'));
 
 // Configuração para gerenciamento de sessão
 app.use(session({
-  secret: 'xR5A%Yz!9vWQs2T#eFD',
-  resave: false,
-  saveUninitialized: false,
+    secret: 'xR5A%Yz!9vWQs2T#eFD',
+    resave: false,
+    saveUninitialized: false,
 }));
 
 // Criando conexão com o banco
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // seu usuário
-  password: '', // sua senha
-  database: 'etiqueta', // seu banco de dados
-  timezone: '-03:00',  // Use UTC-3, por exemplo, para "America/Sao_Paulo"
-  charset: 'utf8mb4', // Suporte a todos os caracteres UTF e emojis.
-  connectTimeout: 10000, // Tempo em milissegundos antes de uma tentativa de conexão ser considerada falha
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'etiqueta',
+    timezone: '-03:00',
+    charset: 'utf8mb4',
+    connectTimeout: 10000,
 });
 
 connection.connect((error) => {
-  if (error) throw error;
-  console.log('Conectado ao banco de dados MySQL.');
+    if (error) throw error;
+    console.log('Conectado ao banco de dados MySQL.');
 });
 
-// Middleware para verificar sessão
-const checkSession = (req, res, next) => {
-  if (!req.session.user) {
-    return res.status(401).send('Acesso não autorizado');
-  }
-  next();
-};
+// Inicializando o Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
-// Rota para a página raiz
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
-});
+// Configurando autenticação com Passport
+auth(passport, connection);
+
+// Função de registro do usuário
+function registerUser(username, password, callback) {
+    bcrypt.genSalt(10, (err, salt) => {
+        if (err) throw err;
+        bcrypt.hash(password, salt, (err, hash) => {
+            if (err) throw err;
+
+            const query = 'INSERT INTO user (username, password) VALUES (?, ?)';
+            connection.query(query, [username, hash], (error, results) => {
+                if (error) {
+                    console.error('Erro durante a inserção:', error);
+                    return callback(error);
+                }
+                callback(null, results);
+            });
+        });
+    });
+}
+
+// Middleware para verificar autenticação
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    console.log('Usuário não autenticado, redirecionando para /login.html');
+    res.redirect('/login.html'); // Redireciona para a página de login se não estiver autenticado
+}
+
+// Rotas públicas
+app.use('/login.html', express.static(path.join(__dirname, 'public', 'login.html')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Rota para o processo de login
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
+app.post('/login', passport.authenticate('local', {
+    successRedirect: '/index.html',
+    failureRedirect: '/login.html',
+    failureFlash: false
+}));
 
-  // Verifica no banco de dados se as credenciais estão corretas
-  const query = 'SELECT * FROM user WHERE username = ? AND password = ?';
-  connection.query(query, [username, password], (error, results) => {
-    if (error) {
-      console.error('Erro durante a consulta:', error);
-      return res.status(500).json({ error: error.message, message: "Ocorreu um erro no servidor" });
-    }
+// Rota para o registro do usuário
+app.post('/register', (req, res) => {
+    const { username, password } = req.body;
 
-    if (results.length > 0) {
-      // Usuário autenticado com sucesso
-      const user = results[0];
-      // Armazena o usuário na sessão
-      req.session.user = user;
-
-      // Redireciona para a página index após o login bem-sucedido
-      return res.redirect('/index.html');
-    } else {
-      // Redireciona de volta para a página de login se as credenciais estiverem incorretas
-      return res.status(401).send('Credenciais inválidas');
-    }
-  });
+    registerUser(username, password, (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message, message: "Ocorreu um erro ao registrar o usuário" });
+        }
+        res.json({ message: 'Usuário registrado com sucesso!' });
+    });
 });
 
-// Rota protegida index
-app.get('/index.html', checkSession, (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Protegendo rotas específicas
+app.use('/index.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'index.html')));
+app.use('/editar-localizacao.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'editar-localizacao.html')));
+app.use('/gerar-qrcode.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'gerar-qrcode.html')));
+app.use('/localizacao.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'localizacao.html')));
+app.use('/register.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'register.html')));
 
-// Rota para logout
-app.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Erro ao fazer logout:', err);
-      return res.status(500).json({ error: 'Erro ao fazer logout' });
-    }
-    res.redirect('/');
-  });
-});
 
 
 // Endpoint para adicionar um novo item
@@ -385,6 +398,9 @@ app.get('/items/:id', (req, res) => {
     res.json(results[0]);
   });
 });
+
+// Endpoints protegidos
+app.use(ensureAuthenticated); 
 
 const PORT = 3000;
 app.listen(PORT, () => {
