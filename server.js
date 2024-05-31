@@ -4,8 +4,6 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const csrf = require('csurf');
-const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(express.static('public'));
@@ -14,7 +12,6 @@ app.use(express.static('node_modules'));
 // Middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // Configuração para gerenciamento de sessão
 app.use(session({
@@ -22,19 +19,6 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
-
-// Configuração de token CSRF
-const csrfProtection = csrf({ cookie: true });
-
-app.use(csrfProtection);
-
-// Middleware para verificar sessão
-const checkSession = (req, res, next) => {
-  if (!req.session.user) {
-    return res.status(401).send('Acesso não autorizado');
-  }
-  next();
-};
 
 // Criando conexão com o banco
 const connection = mysql.createConnection({
@@ -52,18 +36,17 @@ connection.connect((error) => {
   console.log('Conectado ao banco de dados MySQL.');
 });
 
-// Rota para obter o token CSRF
-app.get('/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
+// Middleware para verificar sessão
+const checkSession = (req, res, next) => {
+  if (!req.session.user) {
+    return res.status(401).send('Acesso não autorizado');
+  }
+  next();
+};
 
 // Rota para a página raiz
 app.get('/', (req, res) => {
-  if (!req.session.user) {
-    res.sendFile(path.join(__dirname, 'login.html'));
-  } else {
-    res.redirect('/index.html');
-  }
+  res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // Rota para o processo de login
@@ -85,15 +68,15 @@ app.post('/login', (req, res) => {
       req.session.user = user;
 
       // Redireciona para a página index após o login bem-sucedido
-      res.redirect('/index.html');
+      return res.redirect('/index.html');
     } else {
       // Redireciona de volta para a página de login se as credenciais estiverem incorretas
-      res.status(401).send('Credenciais inválidas');
+      return res.status(401).send('Credenciais inválidas');
     }
   });
 });
 
-// Rota protegida index.html
+// Rota protegida index
 app.get('/index.html', checkSession, (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -108,7 +91,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
-
 
 
 // Endpoint para adicionar um novo item

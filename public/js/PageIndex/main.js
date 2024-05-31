@@ -1,13 +1,3 @@
-// Verifica se o token CSRF está presente e válido
-function validateCSRFToken() {
-  const csrfToken = document.querySelector('input[name="_csrf"]');
-  if (!csrfToken || csrfToken.value !== 'seu_token_csrf') { // Trocar pelo token CSRF gerado pelo servidor
-    displayNotification('Token CSRF inválido.', 'error');
-    return false;
-  }
-  return true;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   // Carregar as localizações no combo box
   fetch('/localizacao')
@@ -28,14 +18,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const addItemForm = document.getElementById("itemForm");
   if (addItemForm) {
-    // Adicionar token CSRF ao formulário
-    addCsrfTokenToForm();
+    // Ao mudar a data de entrada, formata automaticamente
+    addItemForm.elements['entryDate'].addEventListener('change', () => {
+      const entryDateElement = addItemForm.elements['entryDate'];
+      let formattedDate = null;
+      if (entryDateElement.value) {
+        const [dia, mes, ano] = entryDateElement.value.split('/');
+        formattedDate = `${ano}-${mes}-${dia}`;
+        entryDateElement.value = formattedDate; // Mostra a data formatada no campo
+      }
+    });
 
     // Ao submeter o formulário
     addItemForm.addEventListener("submit", function (event) {
       event.preventDefault();
 
-      if (validateForm(addItemForm) && validateCSRFToken()) {
+      if (validateForm(addItemForm)) {
         showConfirmationModal();
       }
     });
@@ -119,8 +117,7 @@ function actualAddItem() {
     location: form.elements['location'].value,
     description: form.elements['description'].value,
     ip: form.elements['ip'].value,
-    tombo: form.elements['tombo'].value,
-    _csrf: form.elements['_csrf'].value // Adicionar token CSRF ao corpo da requisição
+    tombo: form.elements['tombo'].value
   };
 
   fetch('/items', {
