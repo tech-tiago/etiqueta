@@ -6,9 +6,11 @@ const mysql = require('mysql2');
 const passport = require('passport');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-const auth = require('./auth');
+require('./auth')(passport);
 
 const app = express();
+app.use(express.static('public'));
+app.use(express.static('node_modules'));
 
 // Middlewares
 app.use(express.json());
@@ -22,6 +24,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Criando conexão com o banco
 const connection = mysql.createConnection({
@@ -38,13 +43,6 @@ connection.connect((error) => {
     if (error) throw error;
     console.log('Conectado ao banco de dados MySQL.');
 });
-
-// Inicializando o Passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Configurando autenticação com Passport
-auth(passport, connection);
 
 // Função de registro do usuário
 function registerUser(username, password, callback) {
@@ -70,13 +68,8 @@ function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    console.log('Usuário não autenticado, redirecionando para /login.html');
     res.redirect('/login.html'); // Redireciona para a página de login se não estiver autenticado
 }
-
-// Rotas públicas
-app.use('/login.html', express.static(path.join(__dirname, 'public', 'login.html')));
-app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Rota para o processo de login
 app.post('/login', passport.authenticate('local', {
@@ -98,13 +91,11 @@ app.post('/register', (req, res) => {
 });
 
 // Protegendo rotas específicas
-app.use('/index.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'index.html')));
-app.use('/editar-localizacao.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'editar-localizacao.html')));
-app.use('/gerar-qrcode.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'gerar-qrcode.html')));
-app.use('/localizacao.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'localizacao.html')));
-app.use('/register.html', ensureAuthenticated, express.static(path.join(__dirname, 'public', 'register.html')));
-
-
+app.use('/index.html', ensureAuthenticated);
+app.use('/editar-localizacao.html', ensureAuthenticated);
+app.use('/gerar-qrcode.html', ensureAuthenticated);
+app.use('/localizacao.html', ensureAuthenticated);
+app.use('/register.html', ensureAuthenticated);
 
 // Endpoint para adicionar um novo item
 app.post('/items', (req, res) => {
@@ -398,9 +389,6 @@ app.get('/items/:id', (req, res) => {
     res.json(results[0]);
   });
 });
-
-// Endpoints protegidos
-app.use(ensureAuthenticated); 
 
 const PORT = 3000;
 app.listen(PORT, () => {
