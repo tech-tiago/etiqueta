@@ -72,11 +72,22 @@ function ensureAuthenticated(req, res, next) {
 }
 
 // Rota para o processo de login
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/index.html',
-    failureRedirect: '/login.html',
-    failureFlash: false
-}));
+app.post('/login', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            return res.status(500).json({ message: 'Ocorreu um erro no servidor.' });
+        }
+        if (!user) {
+            return res.status(401).json({ message: 'Credenciais inválidas. Por favor, tente novamente.' });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Ocorreu um erro ao fazer login.' });
+            }
+            return res.status(200).json({ message: 'Login bem-sucedido!' });
+        });
+    })(req, res, next);
+});
 
 // Rota para o registro do usuário
 app.post('/register', (req, res) => {
@@ -90,12 +101,27 @@ app.post('/register', (req, res) => {
     });
 });
 
-// Protegendo rotas específicas
-app.use('/index.html', ensureAuthenticated);
-app.use('/editar-localizacao.html', ensureAuthenticated);
-app.use('/gerar-qrcode.html', ensureAuthenticated);
-app.use('/localizacao.html', ensureAuthenticated);
-app.use('/register.html', ensureAuthenticated);
+// Protegendo rotas específicas de API
+app.get('/index.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/editar-localizacao.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'editar-localizacao.html'));
+});
+
+app.get('/gerar-qrcode.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'gerar-qrcode.html'));
+});
+
+app.get('/localizacao.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'localizacao.html'));
+});
+
+app.get('/register.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
 
 // Endpoint para adicionar um novo item
 app.post('/items', (req, res) => {

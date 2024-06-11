@@ -322,11 +322,11 @@ function openPrintWindow(selectedItems) {
                     left: 5px;
                 }
                 .logo {
-                    width: 120px;
-                    height: 65px;
+                    width: 110px;
+                    height: 55px;
                     position: absolute;
-                    top: 15px;
-                    left: -5px;
+                    top: 12px;
+                    left: -3px;
                 }
                 .quadrado {
                     width: 68px;
@@ -369,7 +369,7 @@ function openPrintWindow(selectedItems) {
         itemsForPage.forEach(item => {
             printContent += `
                 <div class="grid-item" style="background-color: ${item.cor};">
-                    <img class="logo" src="images/logo.png">
+                    <img class="logo" src="images/logo.svg">
                     <div class="tombo-info">TOMBO:${item.tombo} ${item.ip ? ` IP:${item.ip}` : ''} COD:${item.codItems}</div>
                     <div class="local-info">Local: ${item.location}</div>
                     <div class="quadrado"></div>
@@ -590,7 +590,7 @@ function showUpdateConfirmationModal(confirmCallback) {
                     className: 'label-content',
                     style: `-webkit-print-color-adjust: exact; border-radius: 10px; border: 1px solid black; width: 185px; height: 85px; position: absolute; margin-right: 10px; background-color: ${item.cor};`
                 },
-                    createElement('img', { src: 'images/logo.png', alt: 'Logo', className: 'logo', style: 'width: 120px; height: 65px; position: absolute; top: 15px; left: -5px;' }),
+                    createElement('img', { src: 'images/logo.svg', alt: 'Logo', className: 'logo', style: 'width: 110px; height: 55px; position: absolute; top: 12px; left: -3px;' }),
                     createElement('div', { className: 'item-details' },
                         createElement('div', { className: 'tombo-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 1px; left: 5px;' },
                             createElement('div', { className: 'info-value' },  'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)

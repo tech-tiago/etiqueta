@@ -61,11 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     left: 5px;
                 }
                 .logo {
-                    width: 120px;
-                    height: 65px;
+                    width: 110px;
+                    height: 55px;
                     position: absolute;
-                    top: 15px;
-                    left: -5px;
+                    top: 12px;
+                    left: -3px;
                 }
                 .quadrado {
                     width: 68px;
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
       itemsForPage.forEach(item => {
         printContent += `
           <div class="grid-item" style="background-color: ${item.cor};">
-              <img class="logo" src="images/logo.png">
+              <img class="logo" src="images/logo.svg">
               <div class="tombo-info">TOMBO:${item.tombo} ${item.ip ? ` IP:${item.ip}` : ''} COD:${item.codItems}</div>
               <div class="local-info">Local: ${item.location}</div>
               <div class="quadrado"></div>
