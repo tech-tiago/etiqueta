@@ -44,6 +44,32 @@ connection.connect((error) => {
     console.log('Conectado ao banco de dados MySQL.');
 });
 
+// Protegendo rotas específicas de API
+app.get('/index.html', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/editar-localizacao.html', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'editar-localizacao.html'));
+});
+
+app.get('/gerar-qrcode.html', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gerar-qrcode.html'));
+});
+
+app.get('/localizacao.html', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'localizacao.html'));
+});
+
+app.get('/register.html', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
+app.get('/gerar-relatorios.html', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gerar-relatorios.html'));
+});
+
+
 // Função de registro do usuário
 function registerUser(username, password, callback) {
     bcrypt.genSalt(10, (err, salt) => {
@@ -99,27 +125,6 @@ app.post('/register', (req, res) => {
         }
         res.json({ message: 'Usuário registrado com sucesso!' });
     });
-});
-
-// Protegendo rotas específicas de API
-app.get('/index.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.get('/editar-localizacao.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'editar-localizacao.html'));
-});
-
-app.get('/gerar-qrcode.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'gerar-qrcode.html'));
-});
-
-app.get('/localizacao.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'localizacao.html'));
-});
-
-app.get('/register.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
 
@@ -396,8 +401,6 @@ app.get('/items', (req, res) => {
   });
 });
 
-
-
 // Endpoint para obter um item específico pelo ID
 app.get('/items/:id', (req, res) => {
   const id = req.params.id;
@@ -420,3 +423,41 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}.`);
 });
+
+// Endpoint para obter todas as localizações
+app.get('/api/localizacoes', (req, res) => {
+  const query = 'SELECT * FROM localizacao';
+  connection.query(query, (error, results) => {
+      if (error) {
+          console.error('Erro ao buscar localizações:', error);
+          return res.status(500).json({ error: 'Erro no servidor ao buscar localizações' });
+      }
+      res.json(results);
+  });
+});
+
+// Endpoint para obter todos os itens com o nome da localização
+app.get('/api/items', (req, res) => {
+  const localizacaoId = req.query.localizacao_id;
+
+  // Construa a consulta SQL com ou sem filtro de localização
+  let query = `
+    SELECT items.codItems, items.tombo, items.itemName, items.entryDate, items.description, localizacao.nome AS localizacaoNome
+    FROM items
+    JOIN localizacao ON items.localizacao_id = localizacao.id
+  `;
+
+  if (localizacaoId) {
+    query += ' WHERE items.localizacao_id = ?';
+  }
+
+  // Execute a consulta com ou sem o parâmetro de localização
+  connection.query(query, [localizacaoId], (error, results) => {
+      if (error) {
+          console.error('Erro ao buscar itens:', error);
+          return res.status(500).json({ error: 'Erro no servidor ao buscar itens' });
+      }
+      res.json(results);
+  });
+});
+

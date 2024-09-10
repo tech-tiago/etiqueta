@@ -21,7 +21,7 @@ function gerarProtocolo() {
     }).length;
     
     // Gera o número do protocolo
-    var protocolo = "CCD" + ("000000" + (lin + 1)).slice(-6);
+    var protocolo = "CPS" + ("000000" + (lin + 1)).slice(-6);
     
     // Define o destino na célula apropriada (começando em H2 e seguindo nas próximas linhas)
     var destino = aba.getRange(2 + lin, 8);

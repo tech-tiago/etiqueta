@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuário</title>
+    <title>Gerar Relatórios</title>
     <link rel="icon" href="#" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
     <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
@@ -39,49 +38,48 @@
         </div>
     </nav>
 
-    <section class="hero is-fullheight">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-half">
-                        <div id="notification-area"></div> <!-- Área de Notificação -->
-
-                        <div class="box">
-                            <form id="registerForm">
-                                <div class="field">
-                                    <label class="label">Usuário</label>
-                                    <div class="control has-icons-left">
-                                        <input class="input" type="text" id="username" name="username" placeholder="Seu usuário" required>
-                                        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="label">Senha</label>
-                                    <div class="control has-icons-left">
-                                        <input class="input" type="password" id="password" name="password" placeholder="Sua senha" required>
-                                        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <div class="control">
-                                        <button type="submit" class="button is-primary is-fullwidth">
-                                            <span class="icon"><i class="fas fa-user-plus"></i></span>
-                                            <span>Cadastrar</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Gerar Relatórios</h1>
+            <div class="field">
+                <label class="label">Selecione a Localização</label>
+                <div class="control">
+                    <div class="select">
+                        <select id="localizacaoSelect">
+                            <option value="">Todas as Localizações</option>
+                            <!-- As opções serão carregadas pelo JavaScript -->
+                        </select>
                     </div>
                 </div>
+            </div>
+            <div class="buttons">
+                <button id="generateLocationReportButton" class="button is-primary"><i class="fa-solid fa-file-alt"></i> &nbsp;Gerar Relatório por Localização</button>
+                <button id="generateAllItemsReportButton" class="button is-link"><i class="fa-solid fa-file-alt"></i> &nbsp;Gerar Relatório Geral</button>
+            </div>
+
+            <div class="table-container box">
+                <table class="table is-fullwidth is-hoverable" id="reportTable">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Tombo</th>
+                            <th>Nome do Item</th>
+                            <th>Entrada</th>
+                            <th>Localização</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Os relatórios serão inseridos aqui pelo JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
 
+    <!-- Códigos JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/v/bm/dt-1.13.6/datatables.min.js"></script>
-    <script src="js/PageRegister/register.js"></script>
+    <script src="js/pageGerarRelatorios/gerar-relatorios.js"></script>
 </body>
 </html>
