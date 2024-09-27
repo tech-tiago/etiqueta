@@ -277,130 +277,135 @@ function showDeleteConfirmationModal(id) {
 }
 
 // Função para abrir a janela de impressão
-function openPrintWindow(selectedItems) {
-    const itemsPerPage = 48; // Defina a quantidade de itens por página
-    const numberOfPages = Math.ceil(selectedItems.length / itemsPerPage);
+function openPrintWindow(items) {
     const printWindow = window.open('', '_blank');
-    
+    const itemsPerPage = 48;
+    const numberOfPages = Math.ceil(items.length / itemsPerPage);
     let printContent = `
-        <html>
-        <head>
-            <title>Imprimir Etiquetas</title>
-            <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css'> 
-            <style>
-                .a4-size {
-                    width: 210mm;
-                    height: 297mm;
-                    display: flex;
-                    flex-wrap: wrap;
-                    align-content: flex-start;
-                    padding: 3.85mm;
-                    background-color: white;
-                    overflow: hidden;
-                    page-break-after: always;
-                }
-                .grid-item {
-                    -webkit-print-color-adjust: exact;
-                    width: 185px;
-                    height: 85px;
-                    border-radius: 10px;
-                    border: 1px solid black;
-                    margin: 3px;
-                    position: relative;
-                }
-                .tombo-info, .local-info, .qr-code, .ip-info, .data-info, .cod-info {
-                    font-weight: bold;
-                    font-size: 7px;
-                    position: absolute;
-                }
-                .tombo-info {
-                    top: 1px;
-                    left: 5px;
-                }
-                .local-info {
-                    top: 67px;
-                    left: 5px;
-                }
-                .logo {
-                    width: 110px;
-                    height: 55px;
-                    position: absolute;
-                    top: 12px;
-                    left: -3px;
-                }
-                .quadrado {
-                    width: 68px;
-                    height: 66px;
-                    border: 1px solid;
-                    border-radius: 4px;
-                    border-color: #000;
-                    position: absolute;
-                    background-color: #fff;
-                    top: 12px;
-                    right: 7px;
-                }
-                .qr-code {
-                    top: 14px;
-                    right: 10px;
-                }
-                .ip-info {
-                    top: 1px;
-                    right: 126px;
-                }
-                .data-info {
-                    top: 1px;
-                    right: 60px;
-                }
-                .cod-info {
-                    top: 65px;
-                    right: 110px;
-                }
-            </style>
-        </head>
-        <body>
+      <html>
+      <head>
+          <title>Imprimir Etiquetas</title>
+          <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css'> 
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+          <style>
+              .a4-size {
+                  width: 210mm;
+                  height: 297mm;
+                  display: flex;
+                  flex-wrap: wrap;
+                  align-content: flex-start;
+                  padding: 3.85mm;
+                  background-color: white;
+                  overflow: hidden;
+                  page-break-after: always;
+              }
+              .grid-item {
+                  -webkit-print-color-adjust: exact;
+                  width: 185px;
+                  height: 85px;
+                  border-radius: 10px;
+                  border: 1px solid black;
+                  margin: 3px;
+                  position: relative;
+              }
+              .tombo-info, .local-info, .qr-code, .ip-info, .data-info, .cod-info {
+                  font-weight: bold;
+                  font-size: 7px;
+                  position: absolute;
+              }
+              .tombo-info {
+                  top: 1px;
+                  left: 5px;
+              }
+              .local-info {
+                  top: 67px;
+                  left: 5px;
+              }
+              .logo {
+                  width: 110px;
+                  height: 55px;
+                  position: absolute;
+                  top: 12px;
+                  left: -3px;
+              }
+              .quadrado {
+                  width: 68px;
+                  height: 66px;
+                  border: 1px solid;
+                  border-radius: 4px;
+                  border-color: #000;
+                  position: absolute;
+                  background-color: #fff;
+                  top: 12px;
+                  right: 7px;
+              }
+              .qr-code {
+                  top: 14px;
+                  right: 10px;
+              }
+              .ip-info {
+                  top: 1px;
+                  right: 126px;
+              }
+              .data-info {
+                  top: 1px;
+                  right: 60px;
+              }
+              .cod-info {
+                  top: 65px;
+                  right: 110px;
+              }
+          </style>
+      </head>
+      <body>
     `;
 
     for (let page = 0; page < numberOfPages; page++) {
-        printContent += `<div class="a4-size">`;
-        const start = page * itemsPerPage;
-        const end = start + itemsPerPage;
-        const itemsForPage = selectedItems.slice(start, end);
+      printContent += `<div class="a4-size">`;
+      const start = page * itemsPerPage;
+      const end = start + itemsPerPage;
+      const itemsForPage = items.slice(start, end);
 
-        itemsForPage.forEach(item => {
-            printContent += `
-                <div class="grid-item" style="background-color: ${item.cor};">
-                    <img class="logo" src="images/logo.svg">
-                    <div class="tombo-info">TOMBO:${item.tombo} ${item.ip ? ` IP:${item.ip}` : ''} COD:${item.codItems}</div>
-                    <div class="local-info">Local: ${item.location}</div>
-                    <div class="quadrado"></div>
-                    <div class="qr-code" id="qrcode-${item.id}"></div>
-                </div>`;
-        });
+      itemsForPage.forEach(item => {
+        printContent += `
+          <div class="grid-item" style="background-color: ${item.cor};">
+              <img class="logo" src="images/logo.svg">
+              <div class="tombo-info">TOMBO:${item.tombo} ${item.ip ? ` IP:${item.ip}` : ''} COD:${item.codItems}</div>
+              <div class="local-info">Local: ${item.location}</div>
+              <div class="quadrado"></div>
+              <div class="qr-code" id="qrcode-${item.id}"></div>
+          </div>`;
+      });
 
-        printContent += `</div>`;
+      printContent += `</div>`;
     }
 
     printContent += `
-        <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-        <script>
-            ${selectedItems.map(item => `
-                new QRCode(document.getElementById('qrcode-${item.id}'), {
-                    text: 'http://10.48.119.115:3000/itemInfo.html?id=${item.id}',
-                    width: 62,
-                    height: 62
-                });
-            `).join('')}
-        </script>
-        </body>
-        </html>
+            <script>
+            $(document).ready(function() {
+                ${items.map(item => `
+                    $('#qrcode-${item.id}').qrcode({
+                        render: 'canvas', // Usar canvas para melhor qualidade
+                        text: '${item.itemName}-${item.tombo}',
+                        width: 63,
+                        height: 63,
+                        ecLevel: 'H' // Nível de correção de erro: H (máxima robustez)
+                    });
+                `).join('')}
+            });
+            </script>
+      </body>
+      </html>
     `;
 
     printWindow.document.write(printContent);
     printWindow.document.close();
     printWindow.onload = function () {
-        printWindow.print();
+      printWindow.print();
     };
-}
+  }
+
 
 
     
@@ -576,7 +581,7 @@ function showUpdateConfirmationModal(confirmCallback) {
 
 
 
-   function showQRCodeModal(item) {
+function showQRCodeModal(item) {
     const modal = createElement('div', { className: 'modal is-active' },
         createElement('div', { className: 'modal-background', style: 'background-color: rgba(0, 0, 0, 0.75);' }),
         createElement('div', { className: 'modal-card label-card', style: 'width: 480px; height: 305px; position: relative;' },
@@ -593,7 +598,7 @@ function showUpdateConfirmationModal(confirmCallback) {
                     createElement('img', { src: 'images/logo.svg', alt: 'Logo', className: 'logo', style: 'width: 110px; height: 55px; position: absolute; top: 12px; left: -3px;' }),
                     createElement('div', { className: 'item-details' },
                         createElement('div', { className: 'tombo-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 1px; left: 5px;' },
-                            createElement('div', { className: 'info-value' },  'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)
+                            createElement('div', { className: 'info-value' }, 'TOMBO:', item.tombo, item.ip ? ` IP:${item.ip}` : '', ' COD:', item.codItems)
                         ),
 
                         createElement('div', { className: 'local-info', style: 'font-weight: bold; font-size: 7px; position: absolute; white-space: nowrap; top: 67px; left: 5px;' },
@@ -602,7 +607,7 @@ function showUpdateConfirmationModal(confirmCallback) {
 
                         createElement('div', { className: 'quadrado', style: 'width: 68px; height: 66px; border: 1px solid; border-radius: 4px; border-color: #000; position: absolute; top: 12px; right: 7px;' }),
                     ),
-                    createElement('div', { className: 'qr-code ', style: 'position: absolute; top: 14px; right: 10px;' },
+                    createElement('div', { className: 'qr-code', style: 'position: absolute; top: 14px; right: 10px;' },
                         createElement('div', { id: 'qrcode', style: 'width: 62px; height: 62px;' })
                     )
                 )
@@ -616,49 +621,49 @@ function showUpdateConfirmationModal(confirmCallback) {
 
     document.body.appendChild(modal);
 
-    const itemUrl = `http://10.48.119.115:3000/itemInfo.html?id=${item.id}`;
+    // Geração do QR Code usando o item da função em formato JSON
+    const qrCodeData = `{"NOME": "${item.itemName}", "TOMBO": "${item.tombo}", "COD": "${item.codItems}"}`;
     new QRCode(document.getElementById('qrcode'), {
-        text: itemUrl,
+        text: qrCodeData,
         width: 62,
         height: 62
     });
 
+    const imprimirButton = document.getElementById('imprimirButton');
+    const downloadButton = document.getElementById('downloadButton');
+    const closeButton = modal.querySelector('.delete');
 
-        const imprimirButton = document.getElementById('imprimirButton');
-        const downloadButton = document.getElementById('downloadButton');
-        const closeButton = modal.querySelector('.delete');
-    
-        // Evento de clique no botão "Imprimir"
-        imprimirButton.addEventListener('click', function () {
-            // Oculte os botões de ação e o botão de fechar antes de imprimir
-            downloadButton.style.display = 'none';
-            imprimirButton.style.display = 'none';
-            closeButton.style.display = 'none';
-    
-            // Chame a função de impressão do navegador
-            window.print();
-    
-            // Restaure a visibilidade dos botões após a impressão
-            downloadButton.style.display = 'block';
-            imprimirButton.style.display = 'block';
-            closeButton.style.display = 'block';
-        });
-    
-        // Evento de clique no botão "Download"
-        downloadButton.addEventListener('click', () => {
-            // Use a URL do seu PDF gerado
-            const pdfUrl = document.getElementById('qrcode').toDataURL('image/png');
-            const a = document.createElement('a');
-            a.href = pdfUrl;
-            a.download = 'etiqueta.png';
-            a.click();
-        });
-    
-        // Evento de clique no ícone de fechamento
-        closeButton.addEventListener('click', () => {
-            document.body.removeChild(modal);
-        });
-    }    
+    // Evento de clique no botão "Imprimir"
+    imprimirButton.addEventListener('click', function () {
+        // Oculte os botões de ação e o botão de fechar antes de imprimir
+        downloadButton.style.display = 'none';
+        imprimirButton.style.display = 'none';
+        closeButton.style.display = 'none';
+
+        // Chame a função de impressão do navegador
+        window.print();
+
+        // Restaure a visibilidade dos botões após a impressão
+        downloadButton.style.display = 'block';
+        imprimirButton.style.display = 'block';
+        closeButton.style.display = 'block';
+    });
+
+    // Evento de clique no botão "Download"
+    downloadButton.addEventListener('click', () => {
+        const pdfUrl = document.getElementById('qrcode').toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = 'etiqueta.png';
+        a.click();
+    });
+
+    // Evento de clique no ícone de fechamento
+    closeButton.addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+}
+   
     
     function createElement(tag, options = {}, ...children) {
         const element = document.createElement(tag);
